@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍄 SUPER NOVA EXAM BROS - NOVA IMS e-Business Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --mario-red: #E60012;
+            --mario-blue: #009ACD;
+            --mario-green: #00AA00;
+            --mario-gold: #FFD700;
+            --mario-brown: #8B4513;
+            --sky-blue: #5C94FC;
+            --cloud-white: #FFFFFF;
+        }
+
+        * { font-family: 'Inter', sans-serif; }
+        .pixel-font { font-family: 'Press Start 2P', cursive; }
+
+        body {
+            background: linear-gradient(180deg, #5C94FC 0%, #5C94FC 70%, #8B4513 70%, #8B4513 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .cloud {
+            position: absolute;
+            background: white;
+            border-radius: 50px;
+            opacity: 0.8;
+            animation: float-cloud 20s infinite linear;
+        }
+
+        .cloud::before, .cloud::after {
+            content: '';
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+        }
+
+        @keyframes float-cloud {
+            from { transform: translateX(-200px); }
+            to { transform: translateX(calc(100vw + 200px)); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes coin-spin {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+
+        @keyframes brick-bump {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .mario-card {
+            background: linear-gradient(135deg, #FFF8DC 0%, #FFFACD 100%);
+            border: 4px solid #E60012;
+            box-shadow: 0 8px 0 #8B0000, 0 15px 20px rgba(0,0,0,0.3);
+            border-radius: 12px;
+        }
+
+        .mario-btn {
+            background: linear-gradient(180deg, #E60012 0%, #B30000 100%);
+            border: 3px solid #8B0000;
+            box-shadow: 0 6px 0 #8B0000, 0 8px 15px rgba(0,0,0,0.3);
+            color: white;
+            text-shadow: 2px 2px 0 #000;
+            transition: all 0.1s;
+        }
+
+        .mario-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 0 0 #8B0000, 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .mario-btn.green {
+            background: linear-gradient(180deg, #00AA00 0%, #006400 100%);
+            border-color: #004d00;
+            box-shadow: 0 6px 0 #004d00, 0 8px 15px rgba(0,0,0,0.3);
+        }
+
+        .mario-btn.green:active {
+            box-shadow: 0 0 0 #004d00, 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .mario-btn.blue {
+            background: linear-gradient(180deg, #009ACD 0%, #00688B 100%);
+            border-color: #004d66;
+            box-shadow: 0 6px 0 #004d66, 0 8px 15px rgba(0,0,0,0.3);
+        }
+
+        .mario-btn.blue:active {
+            box-shadow: 0 0 0 #004d66, 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .coin {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border: 3px solid #DAA520;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #B8860B;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .coin.answered {
+            background: linear-gradient(135deg, #32CD32 0%, #228B22 100%);
+            border-color: #006400;
+            color: white;
+        }
+
+        .pipe {
+            background: linear-gradient(90deg, #00AA00 0%, #006400 50%, #00AA00 100%);
+            border: 4px solid #004d00;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .brick {
+            background: linear-gradient(135deg, #CD5C5C 0%, #8B4513 100%);
+            border: 2px solid #654321;
+            box-shadow: inset 2px 2px 0 rgba(255,255,255,0.3), inset -2px -2px 0 rgba(0,0,0,0.3);
+        }
+
+        .question-block {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border: 3px solid #DAA520;
+            border-radius: 4px;
+            box-shadow: inset 0 0 10px rgba(255,255,255,0.5);
+            animation: brick-bump 2s infinite;
+        }
+
+        .slider-container input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 12px;
+            background: linear-gradient(90deg, #8B4513 0%, #CD5C5C 100%);
+            border-radius: 6px;
+            outline: none;
+            border: 2px solid #654321;
+        }
+
+        .slider-container input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #E60012 0%, #8B0000 100%);
+            border: 3px solid #FFD700;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .slider-container input[type=range]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #E60012 0%, #8B0000 100%);
+            border: 3px solid #FFD700;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .fire-power {
+            background: linear-gradient(90deg, #FF4500, #FFD700, #FF4500);
+            background-size: 200% 100%;
+            animation: fire-flow 2s linear infinite;
+            color: white;
+            text-shadow: 2px 2px 0 #000;
+            border: 2px solid #FF4500;
+        }
+
+        @keyframes fire-flow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .option-label {
+            background: linear-gradient(135deg, #FFF8DC 0%, #FFE4B5 100%);
+            border: 3px solid #DEB887;
+            transition: all 0.2s;
+        }
+
+        .option-label:hover {
+            border-color: #E60012;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .option-label.correct {
+            background: linear-gradient(135deg, #90EE90 0%, #32CD32 100%) !important;
+            border-color: #006400 !important;
+        }
+
+        .option-label.wrong {
+            background: linear-gradient(135deg, #FFA07A 0%, #DC143C 100%) !important;
+            border-color: #8B0000 !important;
+        }
+
+        .option-label.selected {
+            background: linear-gradient(135deg, #87CEEB 0%, #009ACD 100%);
+            border-color: #00688B;
+            color: white;
+        }
+
+        .hud-coin {
+            animation: coin-spin 2s infinite linear;
+        }
+
+        .flag-pole {
+            background: linear-gradient(90deg, #8B4513 0%, #654321 100%);
+            width: 8px;
+        }
+
+        .flag {
+            background: linear-gradient(135deg, #E60012 0%, #FF6347 100%);
+            clip-path: polygon(0 0, 100% 50%, 0 100%);
+        }
+
+        .mushroom-badge {
+            background: linear-gradient(135deg, #E60012 0%, #8B0000 100%);
+            border: 3px solid #FFD700;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            color: white;
+            text-shadow: 1px 1px 0 #000;
+        }
+
+        .star-badge {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            color: #8B4513;
+        }
+
+        .flower-badge {
+            background: linear-gradient(135deg, #FF69B4 0%, #C71585 100%);
+            border-radius: 50%;
+            border: 3px solid #FFD700;
+        }
+
+        .hidden { display: none !important; }
+
+        @keyframes slide-in {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .animate-slide-in { animation: slide-in 0.5s ease-out; }
+
+        .progress-pipe {
+            background: linear-gradient(180deg, #00AA00 0%, #006400 100%);
+            border: 2px solid #004d00;
+        }
+
+        .timer-warning { color: #FF4500; animation: pulse 1s infinite; }
+        .timer-danger { color: #DC143C; animation: pulse 0.5s infinite; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+
+        .confetti-coin {
+            position: fixed;
+            font-size: 24px;
+            animation: fall-rotate 3s linear forwards;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        @keyframes fall-rotate {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="relative">
+    <!-- Clouds Background -->
+    <div class="cloud" style="top: 10%; width: 100px; height: 40px; animation-duration: 25s;"></div>
+    <div class="cloud" style="top: 20%; width: 80px; height: 35px; animation-duration: 30s; animation-delay: 5s;"></div>
+    <div class="cloud" style="top: 15%; width: 120px; height: 45px; animation-duration: 35s; animation-delay: 10s;"></div>
+
+    <!-- Header HUD -->
+    <div id="headerBar" class="fixed top-0 left-0 right-0 z-50 hidden">
+        <div class="bg-black/80 backdrop-blur-md border-b-4 border-green-600 p-3">
+            <div class="max-w-6xl mx-auto flex items-center justify-between text-white">
+                <div class="flex items-center gap-4">
+                    <button onclick="confirmExit()" class="mario-btn bg-gray-600 px-3 py-2 rounded text-xs pixel-font hover:bg-gray-700">
+                        🏠 MENU
+                    </button>
+                    <div class="flex items-center gap-2">
+                        <span id="playerAvatar" class="text-2xl">🍄</span>
+                        <span id="nameDisplay" class="pixel-font text-xs text-yellow-300">MARIO</span>
+                    </div>
+                    <div class="flex items-center gap-2 bg-blue-900/50 px-3 py-1 rounded-full border-2 border-blue-400">
+                        <span class="coin hud-coin text-xs">$</span>
+                        <span id="coinCount" class="pixel-font text-sm text-yellow-300">0</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <div id="firePowerIndicator" class="hidden fire-power px-3 py-1 rounded-full pixel-font text-xs animate-pulse">
+                        🔥 FIRE POWER x<span id="streakCount">3</span>
+                    </div>
+                    <div class="pixel-font text-xs text-center">
+                        <div class="text-gray-400">WORLD</div>
+                        <div>1-<span id="worldNumber">1</span></div>
+                    </div>
+                    <div class="flex items-center gap-2 pixel-font text-sm" id="timerDisplay">
+                        <span class="text-red-400">TIME</span>
+                        <span id="timerValue" class="text-white">400</span>
+                    </div>
+                    <div class="w-10 h-10 relative">
+                        <svg class="w-full h-full transform -rotate-90">
+                            <circle cx="20" cy="20" r="16" fill="none" stroke="#333" stroke-width="3"/>
+                            <circle id="progressCircle" cx="20" cy="20" r="16" fill="none" stroke="#FFD700" stroke-width="3" 
+                                    stroke-dasharray="100.5" stroke-dashoffset="100.5" stroke-linecap="round"/>
+                        </svg>
+                        <span id="progressPercent" class="absolute inset-0 flex items-center justify-center text-xs font-bold">0%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8 max-w-4xl relative z-10">
+        <!-- Setup Screen -->
+        <div id="setupScreen" class="mt-8">
+            <div class="text-center mb-8 animate-bounce">
+                <h1 class="pixel-font text-3xl md:text-5xl text-white mb-2 drop-shadow-[4px_4px_0_#000]" style="text-shadow: 4px 4px 0 #000, -2px -2px 0 #E60012;">
+                    🍄 SUPER NOVA<br>EXAM BROS
+                </h1>
+                <p class="text-white pixel-font text-sm mt-4 bg-black/30 inline-block px-4 py-2 rounded">NOVA IMS e-Business Simulator</p>
+            </div>
+
+            <div class="mario-card p-6 md:p-8">
+                <!-- Player Name -->
+                <div class="mb-6">
+                    <label class="pixel-font text-xs text-blue-800 block mb-2">PLAYER NAME</label>
+                    <input type="text" id="playerName" placeholder="MARIO" maxlength="10"
+                           class="w-full p-3 border-4 border-blue-400 rounded-lg pixel-font text-sm bg-yellow-50 focus:border-red-500 focus:outline-none uppercase">
+                </div>
+
+                <!-- Character Select -->
+                <div class="mb-6">
+                    <label class="pixel-font text-xs text-blue-800 block mb-2">SELECT CHARACTER</label>
+                    <div class="grid grid-cols-5 md:grid-cols-10 gap-2" id="emojiSelector"></div>
+                </div>
+
+                <!-- Game Mode -->
+                <div class="mb-6 grid grid-cols-2 gap-4">
+                    <button onclick="setMode('training')" id="btnTraining" class="mario-btn green py-4 rounded-xl pixel-font text-xs md:text-sm">
+                        🎓 TRAINING
+                    </button>
+                    <button onclick="setMode('exam')" id="btnExam" class="mario-btn py-4 rounded-xl pixel-font text-xs md:text-sm opacity-50">
+                        📝 EXAM
+                    </button>
+                </div>
+
+                <!-- Sliders -->
+                <div class="space-y-6 mb-6 bg-blue-50/50 p-4 rounded-xl border-2 border-blue-200">
+                    <div class="slider-container">
+                        <div class="flex justify-between mb-2">
+                            <label class="pixel-font text-xs text-blue-800">QUESTIONS</label>
+                            <span class="pixel-font text-xs text-red-600" id="questionValue">50</span>
+                        </div>
+                        <input type="range" id="numQuestions" min="5" max="200" value="50" 
+                               oninput="updateSlider('questionValue', this.value)">
+                        <div class="flex justify-between text-xs text-gray-500 mt-1 pixel-font">
+                            <span>5</span><span>200</span>
+                        </div>
+                    </div>
+
+                    <div class="slider-container" id="timeSliderContainer">
+                        <div class="flex justify-between mb-2">
+                            <label class="pixel-font text-xs text-blue-800">TIME LIMIT (MIN)</label>
+                            <span class="pixel-font text-xs text-red-600" id="timeValue">45</span>
+                        </div>
+                        <input type="range" id="customTime" min="5" max="180" value="45"
+                               oninput="updateSlider('timeValue', this.value)">
+                        <div class="flex justify-between text-xs text-gray-500 mt-1 pixel-font">
+                            <span>5</span><span>180</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" id="unlimitedTime" onchange="toggleUnlimitedTime()"
+                               class="w-5 h-5 accent-red-600 cursor-pointer">
+                        <label for="unlimitedTime" class="pixel-font text-xs text-blue-800 cursor-pointer">
+                            ⏱️ UNLIMITED TIME
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Start Button -->
+                <button onclick="startGame()" class="w-full mario-btn py-5 rounded-xl pixel-font text-lg mb-3">
+                    🚀 START GAME!
+                </button>
+
+                <button onclick="showLeaderboard()" class="w-full mario-btn blue py-3 rounded-xl pixel-font text-xs">
+                    🏆 HIGH SCORES
+                </button>
+            </div>
+
+            <!-- Instructions -->
+            <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-white/90 rounded-xl p-4 border-4 border-blue-400">
+                    <h3 class="pixel-font text-xs text-blue-800 mb-2">🎓 TRAINING MODE</h3>
+                    <ul class="text-xs space-y-1 text-gray-700">
+                        <li>• Immediate feedback</li>
+                        <li>• Shows correct answers</li>
+                        <li>• Learn at your pace</li>
+                        <li>• Fire power streaks!</li>
+                    </ul>
+                </div>
+                <div class="bg-white/90 rounded-xl p-4 border-4 border-red-400">
+                    <h3 class="pixel-font text-xs text-red-800 mb-2">📝 EXAM MODE</h3>
+                    <ul class="text-xs space-y-1 text-gray-700">
+                        <li>• Timed challenge</li>
+                        <li>• No hints during exam</li>
+                        <li>• Review at the end</li>
+                        <li>• Test your knowledge!</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exam Screen -->
+        <div id="examScreen" class="hidden mt-24 mb-20">
+            <div id="questionsContainer" class="space-y-6"></div>
+
+            <!-- Navigation -->
+            <div class="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex gap-3 z-40">
+                <button onclick="prevQuestion()" class="mario-btn bg-gray-600 px-4 py-3 rounded-full pixel-font text-xs">
+                    ← PREV
+                </button>
+                <button onclick="submitExam()" class="mario-btn green px-6 py-3 rounded-full pixel-font text-sm">
+                    ✅ FINISH
+                </button>
+                <button onclick="nextQuestion()" class="mario-btn px-4 py-3 rounded-full pixel-font text-xs">
+                    NEXT →
+                </button>
+            </div>
+
+            <!-- Quick Nav Coins -->
+            <div class="fixed right-2 top-24 bg-black/80 rounded-xl p-3 max-h-[70vh] overflow-y-auto border-4 border-yellow-400 hidden md:block">
+                <div class="pixel-font text-xs text-yellow-300 text-center mb-2">COINS</div>
+                <div class="grid grid-cols-4 gap-1" id="quickNav"></div>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="resultsScreen" class="hidden mt-8">
+            <div class="mario-card p-6 md:p-8 text-center">
+                <div class="text-6xl mb-4 animate-bounce" id="resultEmoji">🏆</div>
+                <h2 class="pixel-font text-2xl text-blue-800 mb-4">COURSE CLEAR!</h2>
+
+                <div class="relative inline-block mb-6">
+                    <svg class="w-40 h-40 transform -rotate-90">
+                        <circle cx="80" cy="80" r="70" fill="none" stroke="#e5e7eb" stroke-width="12"/>
+                        <circle id="scoreCircle" cx="80" cy="80" r="70" fill="none" 
+                                stroke="url(#scoreGradient)" stroke-width="12" stroke-dasharray="440" 
+                                stroke-dashoffset="440" stroke-linecap="round" class="transition-all duration-1000"/>
+                        <defs>
+                            <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#FFD700"/>
+                                <stop offset="100%" stop-color="#FF6347"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                        <span class="pixel-font text-4xl text-blue-800" id="finalScore">0</span>
+                        <span class="pixel-font text-xs text-gray-500">/ 20</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                    <div class="bg-green-100 border-2 border-green-500 rounded-lg p-3">
+                        <div class="pixel-font text-xs text-green-700">COINS</div>
+                        <div class="pixel-font text-lg text-green-800" id="statCoins">0</div>
+                    </div>
+                    <div class="bg-blue-100 border-2 border-blue-500 rounded-lg p-3">
+                        <div class="pixel-font text-xs text-blue-700">TIME</div>
+                        <div class="pixel-font text-lg text-blue-800" id="statTime">0:00</div>
+                    </div>
+                    <div class="bg-purple-100 border-2 border-purple-500 rounded-lg p-3">
+                        <div class="pixel-font text-xs text-purple-700">STREAK</div>
+                        <div class="pixel-font text-lg text-purple-800" id="statStreak">0</div>
+                    </div>
+                    <div class="bg-yellow-100 border-2 border-yellow-500 rounded-lg p-3">
+                        <div class="pixel-font text-xs text-yellow-700">RANK</div>
+                        <div class="pixel-font text-lg text-yellow-800" id="statRank">F</div>
+                    </div>
+                </div>
+
+                <div id="achievementsSection" class="hidden mb-6">
+                    <h3 class="pixel-font text-xs text-blue-800 mb-3">TROPHIES EARNED</h3>
+                    <div class="flex flex-wrap justify-center gap-2" id="earnedBadges"></div>
+                </div>
+
+                <div class="flex gap-3 justify-center">
+                    <button onclick="location.reload()" class="mario-btn px-6 py-3 rounded-xl pixel-font text-xs">
+                        🔄 PLAY AGAIN
+                    </button>
+                    <button onclick="showLeaderboard()" class="mario-btn blue px-6 py-3 rounded-xl pixel-font text-xs">
+                        🏆 SCORES
+                    </button>
+                </div>
+            </div>
+
+            <!-- Detailed Review -->
+            <div class="mt-6 mario-card p-6" id="detailedReview">
+                <h3 class="pixel-font text-sm text-blue-800 mb-4 text-center">📊 BATTLE REVIEW</h3>
+                <div id="reviewContent" class="space-y-3 max-h-96 overflow-y-auto"></div>
+            </div>
+        </div>
+
+        <!-- Leaderboard Modal -->
+        <div id="leaderboardModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+            <div class="mario-card p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="pixel-font text-sm text-blue-800">🏆 HALL OF FAME</h2>
+                    <button onclick="closeLeaderboard()" class="text-2xl hover:text-red-600">×</button>
+                </div>
+                <div id="leaderboardList" class="space-y-2"></div>
+            </div>
+        </div>
+
+        <!-- Exit Confirmation Modal -->
+        <div id="exitModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+            <div class="mario-card p-6 max-w-sm w-full text-center">
+                <div class="text-4xl mb-4">🍄</div>
+                <h2 class="pixel-font text-sm text-blue-800 mb-4">RETURN TO MENU?</h2>
+                <p class="text-xs text-gray-600 mb-6">Progress will be lost!</p>
+                <div class="flex gap-3">
+                    <button onclick="confirmExitYes()" class="flex-1 mario-btn py-3 rounded-lg pixel-font text-xs">
+                        YES
+                    </button>
+                    <button onclick="confirmExitNo()" class="flex-1 mario-btn blue py-3 rounded-lg pixel-font text-xs">
+                        NO
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Question Bank - 200 questions mixed types
+        const questionBank = [
+            { id: 1, type: "tf", question: "The Third Platform includes technologies such as Cloud, Mobility, Big Data/Analytics, and Social Business.", correct: ["a"], points: 0.2 },
+            { id: 2, type: "tf", question: "e-Commerce is considered a subset of e-Business.", correct: ["a"], points: 0.2 },
+            { id: 3, type: "tf", question: "ERP (Enterprise Resource Planning) is primarily focused on achieving competitive advantage through product differentiation.", correct: ["b"], points: 0.2, explanation: "ERP focuses on Operational Excellence (cost reduction), not competitive advantage." },
+            { id: 4, type: "tf", question: "The Lead to Cash (L2C) process starts with 'Contact to Lead' and ends with 'Order to Cash.'", correct: ["a"], points: 0.2 },
+            { id: 5, type: "tf", question: "In the e-Business Suite, the CFO is associated with the Supply Chain module.", correct: ["b"], points: 0.2, explanation: "CFO is associated with Finance (System of Control), not Supply Chain." },
+            { id: 6, type: "tf", question: "SAP Activate Methodology consists of 5 phases: Discover, Prepare, Explore, Realize, and Deploy.", correct: ["b"], points: 0.2, explanation: "SAP Activate has 6 phases: Discover, Prepare, Explore, Realize, Deploy, Run." },
+            { id: 7, type: "tf", question: "Make-to-Stock (MTS) represents the highest degree of customer influence on the production process.", correct: ["b"], points: 0.2, explanation: "MTS has the least customer influence; Engineer-to-Order has the most." },
+            { id: 8, type: "tf", question: "B2C stands for Business-to-Consumer, while B2B stands for Business-to-Business.", correct: ["a"], points: 0.2 },
+            { id: 9, type: "tf", question: "The 'System of Experience' corresponds to the Finance module in the e-Business Suite.", correct: ["b"], points: 0.2, explanation: "System of Experience is CRM, not Finance." },
+            { id: 10, type: "tf", question: "According to the course materials, 80% of B2B sales interactions will occur in digital channels by 2025 (Gartner prediction).", correct: ["a"], points: 0.2 },
+            { id: 11, type: "mc", question: "What is the primary focus of the 'System of Control' in the e-Business Suite?", options: ["a) Customer satisfaction and loyalty", "b) Income, expenses, and accounting (Finance)", "c) Employee lifecycle management", "d) Supply chain visibility"], correct: ["b"], points: 0.2 },
+            { id: 12, type: "mc", question: "Which of the following represents the correct sequence of the Lead to Cash (L2C) process?", options: ["a) Order to Cash → Lead to Opportunity → Contact to Lead", "b) Contact to Lead → Lead to Opportunity → Opportunity to Quote → Quote to Order → Order to Cash", "c) Quote to Order → Contact to Lead → Order to Cash", "d) Lead to Opportunity → Contact to Lead → Order to Cash"], correct: ["b"], points: 0.2 },
+            { id: 13, type: "mc", question: "Which technology is NOT part of the Third Platform?", options: ["a) Mainframe", "b) Cloud", "c) Machine Learning/AI", "d) Mobility"], correct: ["a"], points: 0.2 },
+            { id: 14, type: "multi", question: "Select ALL that apply: Which of the following are part of the Third Platform technologies?", options: ["a) Cloud", "b) Mainframe", "c) Mobility", "d) Social Business", "e) Terminal"], correct: ["a", "c", "d"], points: 0.2 },
+            { id: 15, type: "multi", question: "Which modules are considered part of the 'Digital Core' for operational excellence?", options: ["a) e-Commerce", "b) ERP", "c) CRM", "d) Commerce AI"], correct: ["b", "c"], points: 0.2 },
+            { id: 16, type: "dropdown", question: "Match the System: The CFO is associated with:", options: ["System of Control", "System of Visibility", "System of Spending", "System of Meritocracy"], correct: ["System of Control"], points: 0.2 },
+            { id: 17, type: "dropdown", question: "Match the System: The COO is associated with:", options: ["System of Control", "System of Visibility", "System of Spending", "System of Meritocracy"], correct: ["System of Visibility"], points: 0.2 },
+            { id: 18, type: "mc", question: "What percentage of the world's transaction revenue touches an SAP system?", options: ["a) 50%", "b) 65%", "c) 77%", "d) 92%"], correct: ["c"], points: 0.2 },
+            { id: 19, type: "mc", question: "The typical payback period for SAP Commerce Cloud is:", options: ["a) 6-9 months", "b) 12-18 months", "c) 24-36 months"], correct: ["b"], points: 0.2 },
+            { id: 20, type: "mc", question: "The course evaluation requires a minimum of how many points (out of 20) to pass?", options: ["a) 8", "b) 9", "c) 9.5", "d) 10"], correct: ["c"], points: 0.2 },
+        ];
+
+        // Fill to 200 with variations
+        for (let i = 21; i <= 200; i++) {
+            const base = questionBank[(i - 1) % 20];
+            questionBank.push({ ...base, id: i });
+        }
+
+        // State
+        let currentQuestions = [], userAnswers = {}, examStartTime, timerInterval, currentQuestionIndex = 0;
+        let coins = 0, streak = 0, maxStreak = 0, gameMode = 'training', playerName = 'MARIO', selectedEmoji = '🍄';
+        let answeredCount = 0, correctCount = 0, unlimitedTime = false;
+        let totalTimeSeconds = 0;
+
+        const marioEmojis = ['🍄', '⭐', '🐢', '👑', '🏰', '🚩', '🌟', '🌻', '🔥', '💎', '🎯', '🎮', '🕹️', '👾', '🤖', '👻', '🐉', '🦖', '🚀', '🎪'];
+
+        const badges = [
+            { id: 'first_coin', name: 'First Coin', icon: '🪙', desc: 'Answer first question', unlocked: false, type: 'coin' },
+            { id: 'streak_3', name: 'Fire Power', icon: '🔥', desc: 'Streak of 3', unlocked: false, type: 'fire' },
+            { id: 'streak_5', name: 'Super Star', icon: '⭐', desc: 'Streak of 5', unlocked: false, type: 'star' },
+            { id: 'streak_10', name: 'Invincible', icon: '🌟', desc: 'Streak of 10', unlocked: false, type: 'star' },
+            { id: 'speed_demon', name: 'Speed Run', icon: '🏃', desc: 'Complete under 20min', unlocked: false, type: 'mushroom' },
+            { id: 'perfect_score', name: '1-Up', icon: '💚', desc: 'Perfect 20/20', unlocked: false, type: 'mushroom' },
+            { id: 'passing_grade', name: 'Princess Saved', icon: '👸', desc: 'Pass the exam', unlocked: false, type: 'mushroom' },
+            { id: 'collector', name: 'Coin Collector', icon: '💰', desc: '100+ coins', unlocked: false, type: 'coin' },
+            { id: 'marathon', name: 'Marathon', icon: '🏃', desc: '200 questions', unlocked: false, type: 'mushroom' }
+        ];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderEmojiSelector();
+        });
+
+        function renderEmojiSelector() {
+            const container = document.getElementById('emojiSelector');
+            container.innerHTML = marioEmojis.map(emoji => `
+                <button onclick="selectEmoji('${emoji}')" 
+                        class="text-2xl p-2 rounded-lg border-2 ${emoji === selectedEmoji ? 'bg-red-100 border-red-600 scale-110' : 'bg-white border-gray-300 hover:border-red-400'} transition transform hover:scale-105"
+                        id="emoji-${emoji}">${emoji}</button>
+            `).join('');
+        }
+
+        function selectEmoji(emoji) {
+            selectedEmoji = emoji;
+            renderEmojiSelector();
+        }
+
+        function setMode(mode) {
+            gameMode = mode;
+            document.getElementById('btnTraining').classList.toggle('opacity-50', mode !== 'training');
+            document.getElementById('btnExam').classList.toggle('opacity-50', mode !== 'exam');
+            document.getElementById('timeSliderContainer').style.opacity = mode === 'training' && unlimitedTime ? '0.5' : '1';
+        }
+
+        function updateSlider(id, value) {
+            document.getElementById(id).textContent = value;
+        }
+
+        function toggleUnlimitedTime() {
+            unlimitedTime = document.getElementById('unlimitedTime').checked;
+            document.getElementById('timeSliderContainer').style.opacity = unlimitedTime ? '0.5' : '1';
+        }
+
+        function startGame() {
+            playerName = document.getElementById('playerName').value.toUpperCase() || 'MARIO';
+            const numQuestions = parseInt(document.getElementById('numQuestions').value);
+
+            if (unlimitedTime) {
+                totalTimeSeconds = 99999;
+            } else {
+                const minutes = parseInt(document.getElementById('customTime').value);
+                totalTimeSeconds = minutes * 60;
+            }
+
+            // Shuffle and mix question types
+            const shuffled = [...questionBank].sort(() => 0.5 - Math.random());
+            currentQuestions = shuffled.slice(0, numQuestions);
+
+            userAnswers = {};
+            currentQuestionIndex = 0;
+            coins = 0;
+            streak = 0;
+            maxStreak = 0;
+            answeredCount = 0;
+            correctCount = 0;
+
+            document.getElementById('setupScreen').classList.add('hidden');
+            document.getElementById('examScreen').classList.remove('hidden');
+            document.getElementById('headerBar').classList.remove('hidden');
+            document.getElementById('playerAvatar').textContent = selectedEmoji;
+            document.getElementById('nameDisplay').textContent = playerName;
+
+            renderQuestions();
+            renderQuickNav();
+            updateHUD();
+            startTimer();
+            unlockBadge('first_coin');
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+
+            currentQuestions.forEach((q, index) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = 'mario-card p-6';
+                qDiv.id = `question-${index}`;
+                qDiv.style.display = index === 0 ? 'block' : 'none';
+
+                let html = `
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="question-block w-10 h-10 flex items-center justify-center font-bold text-white pixel-font text-sm">
+                            ${index + 1}
+                        </div>
+                        <div class="flex-1">
+                            <div class="pixel-font text-xs text-gray-500 mb-1">${getQuestionTypeName(q.type)}</div>
+                            <div class="text-lg font-bold text-gray-800">${q.question}</div>
+                        </div>
+                    </div>
+                `;
+
+                if (q.type === 'tf') {
+                    html += `
+                        <div class="grid grid-cols-2 gap-4">
+                            <button onclick="selectOption(${q.id}, 'a', 'tf')" class="option-label p-4 rounded-lg text-center font-bold ${userAnswers[q.id]?.includes('a') ? 'selected' : ''}" data-value="a">
+                                ✅ TRUE
+                            </button>
+                            <button onclick="selectOption(${q.id}, 'b', 'tf')" class="option-label p-4 rounded-lg text-center font-bold ${userAnswers[q.id]?.includes('b') ? 'selected' : ''}" data-value="b">
+                                ❌ FALSE
+                            </button>
+                        </div>
+                    `;
+                } else if (q.type === 'mc') {
+                    html += `<div class="space-y-3">`;
+                    q.options.forEach(opt => {
+                        const val = opt.charAt(0);
+                        html += `
+                            <button onclick="selectOption(${q.id}, '${val}', 'mc')" 
+                                    class="option-label w-full p-4 rounded-lg text-left flex items-center gap-3 ${userAnswers[q.id]?.includes(val) ? 'selected' : ''}" data-value="${val}">
+                                <span class="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center font-bold text-red-800 border-2 border-red-600">${val.toUpperCase()}</span>
+                                <span class="font-semibold">${opt.substring(3)}</span>
+                            </button>
+                        `;
+                    });
+                    html += `</div>`;
+                } else if (q.type === 'multi') {
+                    html += `<div class="space-y-3">`;
+                    q.options.forEach(opt => {
+                        const val = opt.charAt(0);
+                        const isSelected = userAnswers[q.id]?.includes(val);
+                        html += `
+                            <button onclick="toggleOption(${q.id}, '${val}')" 
+                                    class="option-label w-full p-4 rounded-lg text-left flex items-center gap-3 ${isSelected ? 'selected' : ''}" data-value="${val}">
+                                <span class="w-6 h-6 rounded border-2 ${isSelected ? 'bg-red-600 border-red-600' : 'border-red-400 bg-white'} flex items-center justify-center text-white font-bold">${isSelected ? '✓' : ''}</span>
+                                <span>${opt.substring(3)}</span>
+                            </button>
+                        `;
+                    });
+                    html += `</div>`;
+                    html += `
+                        <button onclick="submitMulti(${q.id})" 
+                                class="mario-btn green w-full mt-4 py-3 rounded-lg pixel-font text-xs">
+                            ✅ CHECK ANSWER
+                        </button>
+                    `;
+                } else if (q.type === 'dropdown') {
+                    html += `
+                        <select onchange="selectDropdown(${q.id}, this.value)" 
+                                class="w-full p-4 border-4 border-blue-400 rounded-lg pixel-font text-sm bg-yellow-50">
+                            <option value="">-- SELECT --</option>
+                    `;
+                    q.options.forEach(opt => {
+                        html += `<option value="${opt}" ${userAnswers[q.id]?.includes(opt) ? 'selected' : ''}>${opt}</option>`;
+                    });
+                    html += `</select>`;
+                }
+
+                html += `<div id="feedback-${index}" class="mt-4 hidden"></div>`;
+                qDiv.innerHTML = html;
+                container.appendChild(qDiv);
+            });
+        }
+
+        function getQuestionTypeName(type) {
+            const names = { tf: 'TRUE/FALSE', mc: 'MULTIPLE CHOICE', multi: 'MULTI-SELECT', dropdown: 'MATCHING' };
+            return names[type] || type.toUpperCase();
+        }
+
+        function renderQuickNav() {
+            const container = document.getElementById('quickNav');
+            container.innerHTML = currentQuestions.map((q, i) => {
+                const isAnswered = userAnswers[q.id] && userAnswers[q.id].length > 0;
+                return `
+                    <button onclick="goToQuestion(${i})" 
+                            class="coin w-8 h-8 text-xs flex items-center justify-center cursor-pointer transition hover:scale-110 ${isAnswered ? 'answered' : ''}"
+                            id="nav-${i}">
+                        ${isAnswered ? '✓' : i + 1}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function selectOption(qid, val, type) {
+            if (userAnswers[qid] && gameMode === 'exam') return; // Already answered in exam mode
+
+            userAnswers[qid] = [val];
+            answeredCount++;
+
+            const q = currentQuestions.find(q => q.id === qid);
+            const isCorrect = q.correct.includes(val);
+
+            if (isCorrect) {
+                correctCount++;
+                coins += calculateCoins();
+                streak++;
+                if (streak > maxStreak) maxStreak = streak;
+                checkStreakBadges();
+            } else {
+                streak = 0;
+            }
+
+            updateHUD();
+            renderQuickNav();
+
+            // Visual feedback
+            const card = document.getElementById(`question-${currentQuestionIndex}`);
+            const buttons = card.querySelectorAll('[data-value]');
+            buttons.forEach(btn => {
+                const btnVal = btn.getAttribute('data-value');
+                if (btnVal === val) btn.classList.add(isCorrect ? 'correct' : 'wrong');
+                if (q.correct.includes(btnVal)) btn.classList.add('correct');
+                btn.style.pointerEvents = 'none';
+            });
+
+            if (gameMode === 'training') {
+                showFeedback(currentQuestionIndex, isCorrect, q);
+            } else {
+                setTimeout(() => nextQuestion(), 500);
+            }
+        }
+
+        function toggleOption(qid, val) {
+            if (!userAnswers[qid]) userAnswers[qid] = [];
+            const idx = userAnswers[qid].indexOf(val);
+            if (idx > -1) userAnswers[qid].splice(idx, 1);
+            else userAnswers[qid].push(val);
+
+            // Re-render just this question to show selection
+            const q = currentQuestions[currentQuestionIndex];
+            if (q.id === qid) {
+                const card = document.getElementById(`question-${currentQuestionIndex}`);
+                const btn = card.querySelector(`[data-value="${val}"]`);
+                const isSelected = userAnswers[qid].includes(val);
+                btn.classList.toggle('selected', isSelected);
+                const check = btn.querySelector('.w-6');
+                if (check) {
+                    check.className = `w-6 h-6 rounded border-2 flex items-center justify-center text-white font-bold ${isSelected ? 'bg-red-600 border-red-600' : 'border-red-400 bg-white'}`;
+                    check.textContent = isSelected ? '✓' : '';
+                }
+            }
+        }
+
+        function submitMulti(qid) {
+            const q = currentQuestions.find(q => q.id === qid);
+            const ans = userAnswers[qid] || [];
+            if (ans.length === 0) return alert('Select at least one option!');
+
+            const isCorrect = q.correct.every(c => ans.includes(c)) && ans.length === q.correct.length;
+
+            if (isCorrect) {
+                correctCount++;
+                coins += calculateCoins();
+                streak++;
+                if (streak > maxStreak) maxStreak = streak;
+                checkStreakBadges();
+            } else {
+                streak = 0;
+            }
+
+            answeredCount++;
+            updateHUD();
+            renderQuickNav();
+
+            // Visual feedback
+            const card = document.getElementById(`question-${currentQuestionIndex}`);
+            const buttons = card.querySelectorAll('[data-value]');
+            buttons.forEach(btn => {
+                const btnVal = btn.getAttribute('data-value');
+                if (ans.includes(btnVal) && !q.correct.includes(btnVal)) btn.classList.add('wrong');
+                if (q.correct.includes(btnVal)) btn.classList.add('correct');
+                btn.style.pointerEvents = 'none';
+            });
+
+            if (gameMode === 'training') {
+                showFeedback(currentQuestionIndex, isCorrect, q);
+            } else {
+                setTimeout(() => nextQuestion(), 500);
+            }
+        }
+
+        function selectDropdown(qid, val) {
+            if (!val) return;
+            userAnswers[qid] = [val];
+            answeredCount++;
+
+            const q = currentQuestions.find(q => q.id === qid);
+            const isCorrect = q.correct.includes(val);
+
+            if (isCorrect) {
+                correctCount++;
+                coins += calculateCoins();
+                streak++;
+                if (streak > maxStreak) maxStreak = streak;
+                checkStreakBadges();
+            } else {
+                streak = 0;
+            }
+
+            updateHUD();
+            renderQuickNav();
+
+            if (gameMode === 'training') {
+                showFeedback(currentQuestionIndex, isCorrect, q);
+            } else {
+                setTimeout(() => nextQuestion(), 500);
+            }
+        }
+
+        function calculateCoins() {
+            let base = 10;
+            if (streak >= 3) base += 5;
+            if (streak >= 5) base += 5;
+            if (streak >= 10) base += 10;
+            return base;
+        }
+
+        function checkStreakBadges() {
+            if (streak >= 3) unlockBadge('streak_3');
+            if (streak >= 5) unlockBadge('streak_5');
+            if (streak >= 10) unlockBadge('streak_10');
+            if (coins >= 100) unlockBadge('collector');
+        }
+
+        function showFeedback(index, isCorrect, q) {
+            const feedbackDiv = document.getElementById(`feedback-${index}`);
+            feedbackDiv.classList.remove('hidden');
+
+            let html = '';
+            if (isCorrect) {
+                html = `
+                    <div class="bg-green-100 border-4 border-green-500 rounded-xl p-4 animate-slide-in">
+                        <div class="flex items-center gap-3">
+                            <span class="text-4xl">🎉</span>
+                            <div>
+                                <div class="pixel-font text-green-800 text-sm">CORRECT! +${calculateCoins()} COINS</div>
+                                <div class="text-green-600 text-xs">Streak: ${streak} 🔥</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                const correctText = q.correct.map(c => {
+                    if (q.type === 'tf') return c === 'a' ? 'TRUE' : 'FALSE';
+                    if (q.options) {
+                        const opt = q.options.find(o => o.startsWith(c + ')'));
+                        return opt ? opt.substring(3) : c;
+                    }
+                    return c;
+                }).join(', ');
+
+                html = `
+                    <div class="bg-red-100 border-4 border-red-500 rounded-xl p-4 animate-slide-in">
+                        <div class="flex items-center gap-3">
+                            <span class="text-4xl">😅</span>
+                            <div class="flex-1">
+                                <div class="pixel-font text-red-800 text-sm">WRONG!</div>
+                                <div class="text-red-600 text-xs">Correct: ${correctText}</div>
+                                ${q.explanation ? `<div class="text-gray-600 text-xs mt-1">💡 ${q.explanation}</div>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            html += `
+                <div class="mt-4 flex justify-end">
+                    <button onclick="nextQuestion()" class="mario-btn px-6 py-2 rounded-lg pixel-font text-xs">
+                        NEXT →
+                    </button>
+                </div>
+            `;
+
+            feedbackDiv.innerHTML = html;
+
+            // Scroll to feedback
+            feedbackDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function updateHUD() {
+            document.getElementById('coinCount').textContent = coins;
+            document.getElementById('streakCount').textContent = streak;
+            document.getElementById('worldNumber').textContent = currentQuestionIndex + 1;
+
+            const firePower = document.getElementById('firePowerIndicator');
+            if (streak >= 3) {
+                firePower.classList.remove('hidden');
+            } else {
+                firePower.classList.add('hidden');
+            }
+
+            // Progress ring
+            const percent = answeredCount / currentQuestions.length;
+            const circle = document.getElementById('progressCircle');
+            const circumference = 2 * Math.PI * 16;
+            circle.style.strokeDashoffset = circumference - (percent * circumference);
+            document.getElementById('progressPercent').textContent = Math.round(percent * 100) + '%';
+        }
+
+        function startTimer() {
+            if (unlimitedTime) {
+                document.getElementById('timerValue').textContent = '∞';
+                return;
+            }
+
+            let seconds = totalTimeSeconds;
+            examStartTime = Date.now();
+
+            timerInterval = setInterval(() => {
+                seconds--;
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                document.getElementById('timerValue').textContent = 
+                    `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+                const timerDisplay = document.getElementById('timerDisplay');
+                if (seconds < 60) {
+                    timerDisplay.className = 'flex items-center gap-2 pixel-font text-sm timer-danger';
+                } else if (seconds < 300) {
+                    timerDisplay.className = 'flex items-center gap-2 pixel-font text-sm timer-warning';
+                }
+
+                if (seconds <= 0) {
+                    clearInterval(timerInterval);
+                    submitExam();
+                }
+            }, 1000);
+        }
+
+        function goToQuestion(index) {
+            document.querySelectorAll('[id^="question-"]').forEach((el, idx) => {
+                el.style.display = idx === index ? 'block' : 'none';
+            });
+            currentQuestionIndex = index;
+            document.getElementById('worldNumber').textContent = index + 1;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < currentQuestions.length - 1) {
+                goToQuestion(currentQuestionIndex + 1);
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                goToQuestion(currentQuestionIndex - 1);
+            }
+        }
+
+        function confirmExit() {
+            document.getElementById('exitModal').classList.remove('hidden');
+        }
+
+        function confirmExitYes() {
+            clearInterval(timerInterval);
+            location.reload();
+        }
+
+        function confirmExitNo() {
+            document.getElementById('exitModal').classList.add('hidden');
+        }
+
+        function submitExam() {
+            clearInterval(timerInterval);
+            const timeTaken = unlimitedTime ? 0 : Math.floor((Date.now() - examStartTime) / 1000);
+
+            let totalPoints = 0, earnedPoints = 0;
+            currentQuestions.forEach(q => {
+                totalPoints += q.points;
+                const ans = userAnswers[q.id] || [];
+                if (q.type === 'multi') {
+                    if (q.correct.every(c => ans.includes(c)) && ans.length === q.correct.length) {
+                        earnedPoints += q.points;
+                    }
+                } else if (q.correct.some(c => ans.includes(c))) {
+                    earnedPoints += q.points;
+                }
+            });
+
+            const score20 = (earnedPoints / totalPoints) * 20;
+            const passed = score20 >= 9.5;
+
+            document.getElementById('examScreen').classList.add('hidden');
+            document.getElementById('headerBar').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+
+            // Animate score circle
+            const circle = document.getElementById('scoreCircle');
+            const circumference = 2 * Math.PI * 70;
+            setTimeout(() => {
+                circle.style.strokeDashoffset = circumference - ((score20 / 20) * circumference);
+            }, 100);
+
+            // Animate number
+            let current = 0;
+            const increment = score20 / 50;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= score20) {
+                    current = score20;
+                    clearInterval(timer);
+                }
+                document.getElementById('finalScore').textContent = current.toFixed(1);
+            }, 30);
+
+            document.getElementById('resultEmoji').textContent = passed ? '👑' : '🍄';
+
+            // Stats
+            const mins = Math.floor(timeTaken / 60);
+            const secs = timeTaken % 60;
+            document.getElementById('statCoins').textContent = coins;
+            document.getElementById('statTime').textContent = unlimitedTime ? '∞' : `${mins}:${secs.toString().padStart(2, '0')}`;
+            document.getElementById('statStreak').textContent = maxStreak;
+
+            // Rank
+            let rank = 'F';
+            if (score20 >= 18) rank = 'S';
+            else if (score20 >= 16) rank = 'A';
+            else if (score20 >= 14) rank = 'B';
+            else if (score20 >= 12) rank = 'C';
+            else if (score20 >= 10) rank = 'D';
+            else if (passed) rank = 'E';
+            document.getElementById('statRank').textContent = rank;
+
+            // Badges
+            if (passed) unlockBadge('passing_grade');
+            if (score20 === 20) unlockBadge('perfect_score');
+            if (!unlimitedTime && timeTaken < 1200 && currentQuestions.length >= 20) unlockBadge('speed_demon');
+            if (currentQuestions.length >= 200) unlockBadge('marathon');
+
+            const earnedBadges = badges.filter(b => b.unlocked);
+            if (earnedBadges.length > 0) {
+                document.getElementById('achievementsSection').classList.remove('hidden');
+                document.getElementById('earnedBadges').innerHTML = earnedBadges.map(b => {
+                    let badgeClass = 'mushroom-badge';
+                    if (b.type === 'star') badgeClass = 'star-badge w-12 h-12 flex items-center justify-center';
+                    else if (b.type === 'fire') badgeClass = 'flower-badge w-12 h-12 flex items-center justify-center';
+                    else if (b.type === 'coin') badgeClass = 'coin w-12 h-12';
+
+                    return `
+                        <div class="${badgeClass} p-2 flex flex-col items-center justify-center" title="${b.desc}">
+                            <span class="text-xl">${b.icon}</span>
+                            <span class="text-[8px] mt-1 text-center leading-tight">${b.name}</span>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Confetti for pass
+            if (passed) createConfetti();
+
+            // Save score
+            saveScore(playerName, score20, coins, currentQuestions.length, selectedEmoji);
+
+            // Render review
+            renderReview();
+        }
+
+        function unlockBadge(id) {
+            const b = badges.find(x => x.id === id);
+            if (b && !b.unlocked) {
+                b.unlocked = true;
+                // Could show toast notification here
+            }
+        }
+
+        function createConfetti() {
+            const emojis = ['🪙', '⭐', '🍄', '🎉', '👑'];
+            for (let i = 0; i < 30; i++) {
+                const el = document.createElement('div');
+                el.className = 'confetti-coin';
+                el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                el.style.left = Math.random() * 100 + 'vw';
+                el.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 4000);
+            }
+        }
+
+        function renderReview() {
+            const container = document.getElementById('reviewContent');
+            container.innerHTML = currentQuestions.map((q, idx) => {
+                const ans = userAnswers[q.id] || [];
+                let isCorrect = false;
+                if (q.type === 'multi') {
+                    isCorrect = q.correct.every(c => ans.includes(c)) && ans.length === q.correct.length;
+                } else {
+                    isCorrect = q.correct.some(c => ans.includes(c));
+                }
+
+                return `
+                    <div class="border-2 ${isCorrect ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50'} rounded-lg p-3 cursor-pointer hover:shadow-lg transition"
+                         onclick="toggleReviewDetail(this)">
+                        <div class="flex justify-between items-start">
+                            <div class="font-bold text-sm text-gray-800">Q${idx + 1}: ${q.question}</div>
+                            <span class="text-xl">${isCorrect ? '✅' : '❌'}</span>
+                        </div>
+                        <div class="text-xs text-gray-600 mt-1">Your answer: ${ans.join(', ') || 'None'}</div>
+                        <div class="hidden mt-2 p-2 bg-white rounded border border-gray-200 text-xs">
+                            <div class="text-green-700 font-bold">Correct: ${q.correct.join(', ')}</div>
+                            ${q.explanation ? `<div class="text-blue-600 mt-1">💡 ${q.explanation}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleReviewDetail(el) {
+            const detail = el.querySelector('.hidden, .block');
+            if (detail) {
+                detail.classList.toggle('hidden');
+                detail.classList.toggle('block');
+            }
+        }
+
+        function saveScore(name, score, coins, questions, emoji) {
+            let scores = JSON.parse(localStorage.getItem('marioExamScores') || '[]');
+            scores.push({
+                name,
+                score,
+                coins,
+                questions,
+                emoji,
+                date: new Date().toISOString(),
+                mode: gameMode
+            });
+            scores.sort((a, b) => b.score - a.score);
+            scores = scores.slice(0, 10);
+            localStorage.setItem('marioExamScores', JSON.stringify(scores));
+        }
+
+        function showLeaderboard() {
+            const scores = JSON.parse(localStorage.getItem('marioExamScores') || '[]');
+            const list = document.getElementById('leaderboardList');
+
+            if (scores.length === 0) {
+                list.innerHTML = '<div class="text-center text-gray-500 pixel-font text-xs">NO SCORES YET!</div>';
+            } else {
+                list.innerHTML = scores.map((s, i) => `
+                    <div class="flex items-center gap-3 p-3 ${i === 0 ? 'bg-yellow-100 border-2 border-yellow-400 rounded-lg' : 'bg-gray-100 rounded-lg'}">
+                        <div class="text-xl">${s.emoji}</div>
+                        <div class="w-6 h-6 rounded-full ${i < 3 ? 'bg-yellow-500 text-white' : 'bg-gray-400 text-white'} flex items-center justify-center font-bold text-xs">
+                            ${i + 1}
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-bold text-sm">${s.name}</div>
+                            <div class="text-xs text-gray-500">${s.questions} Q | ${s.mode}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold text-blue-600">${s.score.toFixed(1)}/20</div>
+                            <div class="text-xs text-yellow-600">${s.coins}🪙</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            document.getElementById('leaderboardModal').classList.remove('hidden');
+        }
+
+        function closeLeaderboard() {
+            document.getElementById('leaderboardModal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
