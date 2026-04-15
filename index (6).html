@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 NOVA IMS e-Business Exam Simulator Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        @keyframes fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fade-in 0.5s ease-out forwards; }
+        .option-label.correct { border-color: #10b981 !important; background: linear-gradient(135deg, #d1fae5, #a7f3d0) !important; }
+        .option-label.wrong { border-color: #ef4444 !important; background: linear-gradient(135deg, #fee2e2, #fecaca) !important; }
+        .feedback-section { border-top: 2px dashed #e5e7eb; padding-top: 1rem; }
+        @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.5); } 50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.8); } }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        .xp-bar-container { background: rgba(255, 255, 255, 0.1); border-radius: 999px; overflow: hidden; }
+        .xp-bar-fill { background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899); height: 100%; transition: width 0.5s ease-out; border-radius: 999px; }
+        .badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 999px; font-weight: 600; font-size: 0.875rem; }
+        .badge-locked { background: #374151; color: #6b7280; filter: grayscale(1); }
+        .badge-unlocked { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #fff; box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4); }
+        .question-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .option-label { transition: all 0.2s ease; cursor: pointer; }
+        .option-label:hover { background: rgba(99, 102, 241, 0.1); }
+        .option-label.selected { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; }
+        .timer-safe { color: #10b981; } .timer-warning { color: #f59e0b; animation: pulse 1s infinite; } .timer-danger { color: #ef4444; animation: pulse 0.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .streak-flame { animation: flicker 0.5s ease-in-out infinite alternate; }
+        @keyframes flicker { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
+        .achievement-popup { position: fixed; top: 20px; right: -400px; background: linear-gradient(135deg, #1f2937, #374151); color: white; padding: 1rem 2rem; border-radius: 1rem; border: 2px solid #fbbf24; transition: right 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 1000; }
+        .achievement-popup.show { right: 20px; }
+        .dark-mode { background: linear-gradient(135deg, #0f172a, #1e293b); color: #e2e8f0; }
+        .dark-mode .question-card { background: rgba(30, 41, 59, 0.95); color: #e2e8f0; }
+        .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+        .particle { position: absolute; width: 6px; height: 6px; background: rgba(99, 102, 241, 0.3); border-radius: 50%; animation: float-particle 15s infinite; }
+        @keyframes float-particle { 0%, 100% { transform: translateY(100vh) scale(0); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-100vh) scale(1.5); opacity: 0; } }
+        @keyframes confetti-fall { 0% { transform: translateY(-100%) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+        .confetti { position: fixed; width: 10px; height: 10px; pointer-events: none; z-index: 9999; }
+        .glass-header { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.2); }
+        .dark-mode .glass-header { background: rgba(15, 23, 42, 0.8); }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 min-h-screen overflow-x-hidden">
+    <div class="particles" id="particles"></div>
+    <div class="achievement-popup" id="achievementPopup">
+        <span class="text-3xl">🏆</span>
+        <div><div class="font-bold text-sm text-yellow-400">ACHIEVEMENT UNLOCKED!</div><div class="font-semibold" id="achievementText">Speed Demon</div></div>
+    </div>
+
+    <div class="glass-header fixed top-0 left-0 right-0 z-50 p-4 transition-all" id="headerBar" style="display:none;">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-6">
+                <div id="playerAvatar" class="flex items-center gap-2 text-white">
+                    <span class="text-2xl" id="avatarDisplay">🎓</span><span class="font-bold" id="nameDisplay">Player</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">⭐</span>
+                    <div class="w-32 xp-bar-container h-3"><div class="xp-bar-fill" id="xpBar" style="width: 0%"></div></div>
+                    <span class="text-sm font-bold" id="levelText">Level 1</span>
+                </div>
+                <div class="flex items-center gap-2" id="streakContainer" style="display:none;">
+                    <span class="text-2xl streak-flame">🔥</span><span class="font-bold" id="streakText">0</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="flex items-center gap-2 text-xl font-mono font-bold" id="timerDisplay">
+                    <span>⏱️</span><span id="timerValue">45:00</span>
+                </div>
+                <div class="relative w-12 h-12">
+                    <svg class="w-full h-full transform -rotate-90"><circle cx="24" cy="24" r="20" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="4"/><circle cx="24" cy="24" r="20" fill="none" stroke="#10b981" stroke-width="4" stroke-dasharray="125.6" stroke-dashoffset="125.6" class="progress-ring-circle" id="progressCircle"/></svg>
+                    <span class="absolute inset-0 flex items-center justify-center text-xs font-bold" id="progressPercent">0%</span>
+                </div>
+                <button onclick="toggleDarkMode()" class="p-2 rounded-full bg-white/10 hover:bg-white/20 transition"><span id="darkModeIcon">🌙</span></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="relative z-10 container mx-auto px-4 py-8 max-w-4xl">
+        <div id="setupScreen" class="mt-16">
+            <div class="text-center mb-12 animate-float">
+                <h1 class="text-6xl font-extrabold text-white mb-4 drop-shadow-lg">🎓 Exam Simulator Pro</h1>
+                <p class="text-xl text-white/80">NOVA IMS e-Business | Choose Your Mode</p>
+            </div>
+
+            <div class="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl p-8">
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-bold mb-2">👤 Your Name</label>
+                    <input type="text" id="playerName" placeholder="Enter your name..." class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none">
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-bold mb-2">🎭 Choose Your Avatar</label>
+                    <div class="flex gap-3 flex-wrap" id="emojiSelector"></div>
+                    <input type="hidden" id="selectedEmoji" value="🎓">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">📝 Number of Questions</label>
+                        <select id="numQuestions" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none">
+                            <option value="20">20 Questions - Quick Sprint ⚡</option>
+                            <option value="50">50 Questions - Standard 📝</option>
+                            <option value="100">100 Questions - Marathon 🏃</option>
+                            <option value="200" selected>200 Questions - Full Mastery 👑</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">🎮 Select Mode</label>
+                        <select id="examMode" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none" onchange="updateModeSettings()">
+                            <option value="training">🎓 Training Mode - Learn with immediate feedback</option>
+                            <option value="exam">📝 Exam Mode - Test yourself, review at end</option>
+                        </select>
+
+                        <div id="examSettings" class="mt-4 p-4 bg-gray-50 rounded-lg hidden">
+                            <label class="block text-gray-700 font-bold mb-2">⏱️ Time Limit (minutes)</label>
+                            <input type="number" id="customTime" value="45" min="5" max="180" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none">
+                        </div>
+
+                        <div id="trainingSettings" class="mt-4 p-4 bg-indigo-50 rounded-lg">
+                            <div class="flex items-center gap-2 text-indigo-700">
+                                <span class="text-xl">💡</span>
+                                <span class="text-sm font-semibold">Correct answers & explanations shown immediately</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="startGame()" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition animate-glow">
+                    🚀 Start Your Quest
+                </button>
+                <button onclick="showLeaderboard()" class="w-full mt-3 bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold py-3 rounded-xl shadow-lg hover:shadow-xl transition">
+                    🏆 View Hall of Fame
+                </button>
+            </div>
+        </div>
+
+        <div id="examScreen" class="hidden mt-24 mb-12">
+            <div id="questionsContainer" class="space-y-6"></div>
+            <div class="fixed bottom-6 left-1/2 transform -translate-x-1/2 flex gap-4 z-50">
+                <button onclick="prevQuestion()" class="bg-gray-800 text-white px-6 py-3 rounded-full shadow-lg hover:bg-gray-700 transition">← Previous</button>
+                <button onclick="submitExam()" class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-8 py-3 rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition font-bold">✅ Submit</button>
+                <button onclick="nextQuestion()" class="bg-gray-800 text-white px-6 py-3 rounded-full shadow-lg hover:bg-gray-700 transition">Next →</button>
+            </div>
+            <div class="fixed right-6 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-lg rounded-xl p-4 shadow-xl max-h-96 overflow-y-auto hidden md:block">
+                <div class="grid grid-cols-5 gap-2" id="quickNav"></div>
+            </div>
+        </div>
+
+        <div id="resultsScreen" class="hidden mt-16">
+            <div class="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl p-8 text-center">
+                <div class="text-6xl mb-4" id="resultEmoji">🎉</div>
+                <h2 class="text-4xl font-bold text-gray-800 mb-2">Quest Complete!</h2>
+                <p class="text-gray-600 mb-8" id="resultMessage">You've conquered the challenge!</p>
+
+                <div class="relative inline-block mb-8">
+                    <svg class="w-48 h-48 transform -rotate-90"><circle cx="96" cy="96" r="88" fill="none" stroke="#e5e7eb" stroke-width="12"/><circle cx="96" cy="96" r="88" fill="none" stroke="url(#scoreGradient)" stroke-width="12" stroke-dasharray="552" stroke-dashoffset="552" stroke-linecap="round" id="scoreCircle" class="transition-all duration-1000"/><defs><linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#6366f1" /><stop offset="100%" stop-color="#ec4899" /></linearGradient></defs></svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center"><span class="text-5xl font-bold text-gray-800" id="finalScore">0</span><span class="text-gray-500">/ 20</span></div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-indigo-50 rounded-xl p-4"><div class="text-2xl font-bold text-indigo-600" id="statAccuracy">0%</div><div class="text-sm text-gray-600">Accuracy</div></div>
+                    <div class="bg-green-50 rounded-xl p-4"><div class="text-2xl font-bold text-green-600" id="statTime">0:00</div><div class="text-sm text-gray-600">Time</div></div>
+                    <div class="bg-purple-50 rounded-xl p-4"><div class="text-2xl font-bold text-purple-600" id="statXP">0</div><div class="text-sm text-gray-600">XP Earned</div></div>
+                    <div class="bg-yellow-50 rounded-xl p-4"><div class="text-2xl font-bold text-yellow-600" id="statStreak">0</div><div class="text-sm text-gray-600">Best Streak</div></div>
+                </div>
+
+                <div class="mb-8" id="achievementsEarned" style="display:none;">
+                    <h3 class="font-bold text-gray-800 mb-3">🏆 Achievements Unlocked</h3>
+                    <div class="flex flex-wrap justify-center gap-2" id="earnedBadges"></div>
+                </div>
+
+                <div class="flex gap-4 justify-center">
+                    <button onclick="location.reload()" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition">🔄 New Quest</button>
+                    <button onclick="window.print()" class="bg-gray-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:bg-gray-600 transition">🖨️ Print</button>
+                </div>
+            </div>
+
+            <div class="mt-6 bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl p-6" id="detailedReview">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">📊 Review</h3>
+                <div id="reviewContent" class="space-y-4"></div>
+            </div>
+        </div>
+
+        <div id="leaderboardModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center">
+            <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 max-h-96 overflow-y-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">🏆 Hall of Fame</h2>
+                    <button onclick="closeLeaderboard()" class="text-2xl hover:text-red-500 transition">×</button>
+                </div>
+                <div id="leaderboardList" class="space-y-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Question Bank (200 questions)
+        const questionBank = [
+            { id: 1, type: "tf", question: "The Third Platform includes technologies such as Cloud, Mobility, Big Data/Analytics, and Social Business.", correct: ["a"], points: 0.2 },
+            { id: 2, type: "tf", question: "e-Commerce is considered a subset of e-Business.", correct: ["a"], points: 0.2 },
+            { id: 3, type: "tf", question: "ERP (Enterprise Resource Planning) is primarily focused on achieving competitive advantage through product differentiation.", correct: ["b"], points: 0.2, explanation: "ERP focuses on Operational Excellence (cost reduction), not competitive advantage." },
+            { id: 4, type: "tf", question: "The Lead to Cash (L2C) process starts with 'Contact to Lead' and ends with 'Order to Cash.'", correct: ["a"], points: 0.2 },
+            { id: 5, type: "tf", question: "In the e-Business Suite, the CFO is associated with the Supply Chain module.", correct: ["b"], points: 0.2, explanation: "CFO is associated with Finance (System of Control), not Supply Chain." },
+            { id: 6, type: "tf", question: "SAP Activate Methodology consists of 5 phases: Discover, Prepare, Explore, Realize, and Deploy.", correct: ["b"], points: 0.2, explanation: "SAP Activate has 6 phases: Discover, Prepare, Explore, Realize, Deploy, Run." },
+            { id: 7, type: "tf", question: "Make-to-Stock (MTS) represents the highest degree of customer influence on the production process.", correct: ["b"], points: 0.2, explanation: "MTS has the least customer influence; Engineer-to-Order has the most." },
+            { id: 8, type: "tf", question: "B2C stands for Business-to-Consumer, while B2B stands for Business-to-Business.", correct: ["a"], points: 0.2 },
+            { id: 9, type: "tf", question: "The 'System of Experience' corresponds to the Finance module in the e-Business Suite.", correct: ["b"], points: 0.2, explanation: "System of Experience is CRM, not Finance." },
+            { id: 10, type: "tf", question: "According to the course materials, 80% of B2B sales interactions will occur in digital channels by 2025 (Gartner prediction).", correct: ["a"], points: 0.2 },
+            { id: 11, type: "mc", question: "What is the primary focus of the 'System of Control' in the e-Business Suite?", options: ["a) Customer satisfaction and loyalty", "b) Income, expenses, and accounting (Finance)", "c) Employee lifecycle management", "d) Supply chain visibility"], correct: ["b"], points: 0.2 },
+            { id: 12, type: "mc", question: "Which of the following represents the correct sequence of the Lead to Cash (L2C) process?", options: ["a) Order to Cash → Lead to Opportunity → Contact to Lead", "b) Contact to Lead → Lead to Opportunity → Opportunity to Quote → Quote to Order → Order to Cash", "c) Quote to Order → Contact to Lead → Order to Cash", "d) Lead to Opportunity → Contact to Lead → Order to Cash"], correct: ["b"], points: 0.2 },
+            { id: 13, type: "mc", question: "Which technology is NOT part of the Third Platform?", options: ["a) Mainframe", "b) Cloud", "c) Machine Learning/AI", "d) Mobility"], correct: ["a"], points: 0.2 },
+            { id: 14, type: "multi", question: "Select ALL that apply: Which of the following are part of the Third Platform technologies?", options: ["a) Cloud", "b) Mainframe", "c) Mobility", "d) Social Business", "e) Terminal"], correct: ["a", "c", "d"], points: 0.2 },
+            { id: 15, type: "multi", question: "Which modules are considered part of the 'Digital Core' for operational excellence?", options: ["a) e-Commerce", "b) ERP", "c) CRM", "d) Commerce AI"], correct: ["b", "c"], points: 0.2 },
+            { id: 16, type: "dropdown", question: "Match the System: The CFO is associated with:", options: ["System of Control", "System of Visibility", "System of Spending", "System of Meritocracy"], correct: ["System of Control"], points: 0.2 },
+            { id: 17, type: "dropdown", question: "Match the System: The COO is associated with:", options: ["System of Control", "System of Visibility", "System of Spending", "System of Meritocracy"], correct: ["System of Visibility"], points: 0.2 },
+            { id: 18, type: "mc", question: "What percentage of the world's transaction revenue touches an SAP system?", options: ["a) 50%", "b) 65%", "c) 77%", "d) 92%"], correct: ["c"], points: 0.2 },
+            { id: 19, type: "mc", question: "The typical payback period for SAP Commerce Cloud is:", options: ["a) 6-9 months", "b) 12-18 months", "c) 24-36 months"], correct: ["b"], points: 0.2 },
+            { id: 20, type: "mc", question: "The course evaluation requires a minimum of how many points (out of 20) to pass?", options: ["a) 8", "b) 9", "c) 9.5", "d) 10"], correct: ["c"], points: 0.2 },
+        ];
+
+        // Fill to 200 with variations
+        for (let i = 21; i <= 200; i++) {
+            const base = questionBank[(i % 20)];
+            questionBank.push({ ...base, id: i });
+        }
+
+        // State
+        let currentQuestions = [], userAnswers = {}, examStartTime, timerInterval, currentQuestionIndex = 0;
+        let xp = 0, level = 1, streak = 0, maxStreak = 0, gameMode = 'training', playerName = '', selectedEmoji = '🎓';
+        let answeredCount = 0, correctCount = 0;
+
+        const emojiOptions = ['🎓', '👨‍🎓', '👩‍🎓', '🦉', '🐺', '🦁', '🦊', '🐼', '🐨', '🐯', '🤖', '👽', '👻', '💀', '👑', '💎', '🔥', '⚡', '🚀', '🎯'];
+
+        const badges = [
+            { id: 'first_blood', name: 'First Blood', icon: '💉', desc: 'Answer your first question', unlocked: false },
+            { id: 'streak_5', name: 'Hot Streak', icon: '🔥', desc: 'Get 5 correct in a row', unlocked: false },
+            { id: 'streak_10', name: 'Unstoppable', icon: '⚡', desc: 'Get 10 correct in a row', unlocked: false },
+            { id: 'speed_demon', name: 'Speed Demon', icon: '👻', desc: 'Complete exam in under 20 min', unlocked: false },
+            { id: 'perfect_score', name: 'Perfect Score', icon: '💎', desc: 'Get 20/20', unlocked: false },
+            { id: 'passing_grade', name: 'Scholar', icon: '🎓', desc: 'Pass the exam (9.5+)', unlocked: false },
+            { id: 'master', name: 'Master', icon: '👑', desc: 'Complete 200 questions', unlocked: false },
+            { id: 'quick_learner', name: 'Quick Learner', icon: '🚀', desc: 'Answer 50 questions', unlocked: false }
+        ];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderEmojiSelector();
+            createParticles();
+        });
+
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        function renderEmojiSelector() {
+            const container = document.getElementById('emojiSelector');
+            container.innerHTML = emojiOptions.map(emoji => `
+                <button onclick="selectEmoji('${emoji}')" class="emoji-btn text-3xl p-3 rounded-xl border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 transition ${emoji === selectedEmoji ? 'bg-indigo-100 border-indigo-500 ring-2 ring-indigo-300' : ''}" id="emoji-${emoji}">${emoji}</button>
+            `).join('');
+        }
+
+        function selectEmoji(emoji) {
+            selectedEmoji = emoji;
+            document.getElementById('selectedEmoji').value = emoji;
+            renderEmojiSelector();
+        }
+
+        function updateModeSettings() {
+            const mode = document.getElementById('examMode').value;
+            document.getElementById('examSettings').classList.toggle('hidden', mode !== 'exam');
+            document.getElementById('trainingSettings').classList.toggle('hidden', mode !== 'training');
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            document.getElementById('darkModeIcon').textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+        }
+
+        function startGame() {
+            playerName = document.getElementById('playerName').value || 'Anonymous';
+            selectedEmoji = document.getElementById('selectedEmoji').value;
+            const numQuestions = parseInt(document.getElementById('numQuestions').value);
+            gameMode = document.getElementById('examMode').value;
+
+            let minutes = gameMode === 'exam' ? (parseInt(document.getElementById('customTime').value) || 45) : 999;
+
+            const shuffled = [...questionBank].sort(() => 0.5 - Math.random());
+            currentQuestions = shuffled.slice(0, Math.min(numQuestions, questionBank.length));
+
+            userAnswers = {}; currentQuestionIndex = 0; xp = 0; streak = 0; maxStreak = 0;
+            answeredCount = 0; correctCount = 0;
+
+            document.getElementById('setupScreen').classList.add('hidden');
+            document.getElementById('examScreen').classList.remove('hidden');
+            document.getElementById('headerBar').style.display = 'block';
+            document.getElementById('avatarDisplay').textContent = selectedEmoji;
+            document.getElementById('nameDisplay').textContent = playerName;
+
+            renderQuestions();
+            renderQuickNav();
+            startTimer(minutes);
+            updateXPBar();
+            unlockBadge('first_blood');
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+
+            currentQuestions.forEach((q, index) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = 'question-card rounded-xl p-6 shadow-lg';
+                qDiv.id = `question-${index}`;
+                qDiv.style.display = index === 0 ? 'block' : 'none';
+
+                let html = `<div class="flex items-center gap-3 mb-4"><span class="bg-indigo-600 text-white px-3 py-1 rounded-full text-sm font-bold">Q${index + 1}</span><span class="text-gray-500 text-sm">${q.type.toUpperCase()}</span></div><div class="text-lg font-semibold text-gray-800 mb-6">${q.question}</div>`;
+
+                if (q.type === 'tf') {
+                    html += `<div class="grid grid-cols-2 gap-4"><label class="option-label border-2 border-gray-200 rounded-lg p-4 flex items-center gap-3 ${userAnswers[q.id]?.includes('a') ? 'selected' : ''}" onclick="selectOption(${q.id}, 'a', 'tf')"><input type="radio" name="q${q.id}" value="a" class="hidden" ${userAnswers[q.id]?.includes('a') ? 'checked' : ''}><span class="text-2xl">✅</span><span class="font-semibold">True</span></label><label class="option-label border-2 border-gray-200 rounded-lg p-4 flex items-center gap-3 ${userAnswers[q.id]?.includes('b') ? 'selected' : ''}" onclick="selectOption(${q.id}, 'b', 'tf')"><input type="radio" name="q${q.id}" value="b" class="hidden" ${userAnswers[q.id]?.includes('b') ? 'checked' : ''}><span class="text-2xl">❌</span><span class="font-semibold">False</span></label></div>`;
+                } else if (q.type === 'mc') {
+                    html += `<div class="space-y-3">`;
+                    q.options.forEach(opt => {
+                        const val = opt.charAt(0);
+                        html += `<label class="option-label border-2 border-gray-200 rounded-lg p-4 flex items-center gap-3 ${userAnswers[q.id]?.includes(val) ? 'selected' : ''}" onclick="selectOption(${q.id}, '${val}', 'mc')"><input type="radio" name="q${q.id}" value="${val}" class="hidden" ${userAnswers[q.id]?.includes(val) ? 'checked' : ''}><span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-bold text-gray-600">${val.toUpperCase()}</span><span>${opt.substring(3)}</span></label>`;
+                    });
+                    html += `</div>`;
+                } else if (q.type === 'multi') {
+                    html += `<div class="space-y-3">`;
+                    q.options.forEach(opt => {
+                        const val = opt.charAt(0);
+                        const isSelected = userAnswers[q.id]?.includes(val);
+                        html += `<label class="option-label border-2 border-gray-200 rounded-lg p-4 flex items-center gap-3 ${isSelected ? 'selected' : ''}" onclick="toggleOption(${q.id}, '${val}')"><input type="checkbox" name="q${q.id}" value="${val}" class="hidden" ${isSelected ? 'checked' : ''}><span class="w-6 h-6 rounded border-2 ${isSelected ? 'bg-white border-white' : 'border-gray-300'} flex items-center justify-center">${isSelected ? '✓' : ''}</span><span>${opt.substring(3)}</span></label>`;
+                    });
+                    html += `</div>`;
+                    if (!document.querySelector('.check-answer-btn')) {
+                        html += `<button class="check-answer-btn mt-4 bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold w-full" onclick="checkMultiAnswer(${q.id})">✓ Check My Answer</button>`;
+                    }
+                } else if (q.type === 'dropdown') {
+                    html += `<select onchange="selectDropdown(${q.id}, this.value)" class="w-full p-3 border-2 border-gray-200 rounded-lg text-lg"><option value="">-- Select --</option>`;
+                    q.options.forEach(opt => html += `<option value="${opt}" ${userAnswers[q.id]?.includes(opt) ? 'selected' : ''}>${opt}</option>`);
+                    html += `</select>`;
+                }
+
+                qDiv.innerHTML = html;
+                container.appendChild(qDiv);
+            });
+        }
+
+        function renderQuickNav() {
+            const container = document.getElementById('quickNav');
+            container.innerHTML = currentQuestions.map((q, i) => `
+                <button onclick="goToQuestion(${i})" class="w-8 h-8 rounded-lg text-xs font-bold transition ${i === currentQuestionIndex ? 'bg-indigo-600 text-white' : userAnswers[q.id] ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-600'}" id="nav-${i}">${i + 1}</button>
+            `).join('');
+        }
+
+        function selectOption(qid, val, type) {
+            if (userAnswers[qid]) return; // Already answered
+            userAnswers[qid] = [val];
+            answeredCount++;
+            updateProgressRing();
+
+            const q = currentQuestions.find(q => q.id === qid);
+            const isCorrect = q.correct.includes(val);
+
+            updateXP(calculateXP(isCorrect));
+            updateStreak(isCorrect);
+            if (isCorrect) correctCount++;
+
+            // Visual feedback
+            const card = document.getElementById(`question-${currentQuestionIndex}`);
+            const labels = card.querySelectorAll('.option-label');
+            labels.forEach(label => {
+                const input = label.querySelector('input');
+                if (input) {
+                    if (input.value === val) label.classList.add('selected');
+                    label.style.pointerEvents = 'none';
+                }
+            });
+
+            if (gameMode === 'training') {
+                showImmediateFeedback(qid, isCorrect);
+            } else {
+                setTimeout(() => nextQuestion(), 300);
+            }
+        }
+
+        function toggleOption(qid, val) {
+            if (!userAnswers[qid]) userAnswers[qid] = [];
+            const idx = userAnswers[qid].indexOf(val);
+            if (idx > -1) userAnswers[qid].splice(idx, 1);
+            else userAnswers[qid].push(val);
+            renderQuestions();
+            goToQuestion(currentQuestionIndex);
+        }
+
+        function checkMultiAnswer(qid) {
+            const q = currentQuestions.find(q => q.id === qid);
+            const userAns = userAnswers[qid] || [];
+            if (userAns.length === 0) return alert('Select at least one answer');
+
+            const isCorrect = q.correct.every(c => userAns.includes(c)) && userAns.length === q.correct.length;
+            updateXP(calculateXP(isCorrect));
+            updateStreak(isCorrect);
+            if (isCorrect) correctCount++;
+
+            if (gameMode === 'training') showImmediateFeedback(qid, isCorrect);
+            else setTimeout(() => nextQuestion(), 300);
+
+            document.querySelector('.check-answer-btn')?.remove();
+        }
+
+        function selectDropdown(qid, val) {
+            if (!val) return;
+            userAnswers[qid] = [val];
+            answeredCount++;
+            updateProgressRing();
+
+            const q = currentQuestions.find(q => q.id === qid);
+            const isCorrect = q.correct.includes(val);
+
+            updateXP(calculateXP(isCorrect));
+            updateStreak(isCorrect);
+            if (isCorrect) correctCount++;
+
+            if (gameMode === 'training') showImmediateFeedback(qid, isCorrect);
+            else setTimeout(() => nextQuestion(), 300);
+        }
+
+        function showImmediateFeedback(qid, isCorrect) {
+            const q = currentQuestions.find(q => q.id === qid);
+            const card = document.getElementById(`question-${currentQuestionIndex}`);
+
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback-section mt-6 animate-fade-in';
+
+            let html = isCorrect 
+                ? `<div class="bg-green-100 border-2 border-green-500 rounded-xl p-4 mb-4"><div class="flex items-center gap-3 text-green-800"><span class="text-3xl">✅</span><div><div class="font-bold text-lg">Correct!</div><div class="text-sm">+${calculateXP(true)} XP</div></div></div></div>`
+                : `<div class="bg-red-100 border-2 border-red-500 rounded-xl p-4 mb-4"><div class="flex items-center gap-3 text-red-800"><span class="text-3xl">❌</span><div><div class="font-bold text-lg">Incorrect</div><div class="text-sm">See correct answer below</div></div></div></div>`;
+
+            const correctText = q.correct.map(c => {
+                if (q.type === 'tf') return c === 'a' ? 'True' : 'False';
+                if (q.options) { const opt = q.options.find(o => o.startsWith(c + ')')); return opt ? opt.substring(3) : c; }
+                return c;
+            }).join(', ');
+
+            html += `<div class="bg-blue-50 border-l-4 border-blue-500 rounded-r-xl p-4 mb-4"><div class="font-bold text-blue-900 mb-2">🎯 Correct Answer:</div><div class="text-blue-800 font-semibold text-lg">${correctText}</div></div>`;
+
+            if (q.explanation) {
+                html += `<div class="bg-indigo-50 border-l-4 border-indigo-500 rounded-r-xl p-4"><div class="font-bold text-indigo-900 mb-2">💡 Explanation:</div><div class="text-indigo-800">${q.explanation}</div></div>`;
+            }
+
+            html += `<div class="mt-4 flex justify-end"><button onclick="nextQuestion()" class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-700 transition">Next Question →</button></div>`;
+
+            feedbackDiv.innerHTML = html;
+            card.appendChild(feedbackDiv);
+
+            // Highlight
+            const labels = card.querySelectorAll('.option-label');
+            labels.forEach(label => {
+                const input = label.querySelector('input');
+                if (input && q.correct.includes(input.value)) {
+                    label.classList.add('correct');
+                } else if (input && userAnswers[qid]?.includes(input.value) && !q.correct.includes(input.value)) {
+                    label.classList.add('wrong');
+                }
+            });
+        }
+
+        function calculateXP(isCorrect) { return isCorrect ? (10 + (streak >= 5 ? 5 : 0) + (streak >= 10 ? 5 : 0)) : 0; }
+        function updateXP(amount) { xp += amount; const next = level * 100; if (xp >= next) { level++; xp -= next; showAchievement(`Level ${level}!`, '🆙'); } updateXPBar(); }
+        function updateXPBar() { document.getElementById('xpBar').style.width = ((xp / (level * 100)) * 100) + '%'; document.getElementById('levelText').textContent = `Level ${level}`; }
+        function updateStreak(isCorrect) { if (isCorrect) { streak++; if (streak > maxStreak) maxStreak = streak; if (streak === 5) unlockBadge('streak_5'); if (streak === 10) unlockBadge('streak_10'); } else streak = 0; document.getElementById('streakText').textContent = streak; document.getElementById('streakContainer').style.display = streak > 2 ? 'flex' : 'none'; }
+        function unlockBadge(id) { const b = badges.find(x => x.id === id); if (b && !b.unlocked) { b.unlocked = true; showAchievement(b.name, b.icon); } }
+        function showAchievement(name, icon) { const p = document.getElementById('achievementPopup'); document.getElementById('achievementText').textContent = name; p.querySelector('span').textContent = icon; p.classList.add('show'); setTimeout(() => p.classList.remove('show'), 3000); }
+        function updateProgressRing() { const p = (answeredCount / currentQuestions.length) * 100; const c = document.getElementById('progressCircle'); const circ = 2 * Math.PI * 20; c.style.strokeDashoffset = circ - (p / 100) * circ; document.getElementById('progressPercent').textContent = Math.round(p) + '%'; }
+        function startTimer(minutes) { let s = minutes * 60; examStartTime = Date.now(); const t = document.getElementById('timerValue'); const d = document.getElementById('timerDisplay'); timerInterval = setInterval(() => { s--; const m = Math.floor(s / 60), sec = s % 60; t.textContent = `${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`; d.className = 'flex items-center gap-2 text-xl font-mono font-bold ' + (s > 600 ? 'timer-safe' : s > 300 ? 'timer-warning' : 'timer-danger'); if (s <= 0) { clearInterval(timerInterval); submitExam(); } }, 1000); }
+        function goToQuestion(i) { document.querySelectorAll('[id^="question-"]').forEach((el, idx) => el.style.display = idx === i ? 'block' : 'none'); currentQuestionIndex = i; renderQuickNav(); }
+        function nextQuestion() { if (currentQuestionIndex < currentQuestions.length - 1) goToQuestion(currentQuestionIndex + 1); }
+        function prevQuestion() { if (currentQuestionIndex > 0) goToQuestion(currentQuestionIndex - 1); }
+
+        function submitExam() {
+            clearInterval(timerInterval);
+            const timeTaken = Math.floor((Date.now() - examStartTime) / 1000);
+            const mins = Math.floor(timeTaken / 60), secs = timeTaken % 60;
+
+            let total = 0, earned = 0;
+            currentQuestions.forEach(q => {
+                total += q.points;
+                const ans = userAnswers[q.id] || [];
+                if (q.type === 'multi') { if (q.correct.every(c => ans.includes(c)) && ans.length === q.correct.length) earned += q.points; }
+                else if (q.correct.some(c => ans.includes(c))) earned += q.points;
+            });
+
+            const score20 = (earned / total) * 20;
+            const passed = score20 >= 9.5;
+
+            document.getElementById('examScreen').classList.add('hidden');
+            document.getElementById('headerBar').style.display = 'none';
+            document.getElementById('resultsScreen').classList.remove('hidden');
+
+            // Animate score
+            const circle = document.getElementById('scoreCircle');
+            circle.style.strokeDashoffset = 552 - ((score20 / 20) * 552);
+            let cur = 0; const inc = score20 / 50; const tm = setInterval(() => { cur += inc; if (cur >= score20) { cur = score20; clearInterval(tm); } document.getElementById('finalScore').textContent = cur.toFixed(1); }, 30);
+
+            document.getElementById('statAccuracy').textContent = Math.round((correctCount / currentQuestions.length) * 100) + '%';
+            document.getElementById('statTime').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+            document.getElementById('statXP').textContent = xp;
+            document.getElementById('statStreak').textContent = maxStreak;
+
+            if (passed) unlockBadge('passing_grade');
+            if (score20 === 20) unlockBadge('perfect_score');
+            if (gameMode === 'exam' && timeTaken < 1200) unlockBadge('speed_demon');
+            if (currentQuestions.length >= 200) unlockBadge('master');
+            if (currentQuestions.length >= 50) unlockBadge('quick_learner');
+
+            const earnedBadges = badges.filter(b => b.unlocked);
+            if (earnedBadges.length > 0) {
+                document.getElementById('achievementsEarned').style.display = 'block';
+                document.getElementById('earnedBadges').innerHTML = earnedBadges.map(b => `<div class="badge badge-unlocked"><span>${b.icon}</span><span>${b.name}</span></div>`).join('');
+            }
+
+            document.getElementById('resultEmoji').textContent = selectedEmoji;
+            document.getElementById('resultMessage').textContent = score20 >= 18 ? `Outstanding, ${playerName}! You're a Master!` : passed ? `Congratulations, ${playerName}! You passed!` : `Keep practicing, ${playerName}! You'll get there!`;
+
+            if (score20 >= 18 || passed) createConfetti();
+
+            saveScore(playerName, score20, xp, currentQuestions.length);
+            renderDetailedReview();
+        }
+
+        function createConfetti() {
+            const colors = ['#6366f1', '#ec4899', '#10b981', '#f59e0b', '#8b5cf6'];
+            for (let i = 0; i < 50; i++) {
+                const c = document.createElement('div'); c.className = 'confetti'; c.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                c.style.left = Math.random() * 100 + 'vw'; c.style.animation = `confetti-fall ${3 + Math.random() * 2}s linear forwards`;
+                document.body.appendChild(c); setTimeout(() => c.remove(), 5000);
+            }
+        }
+
+        function renderDetailedReview() {
+            const container = document.getElementById('reviewContent');
+            const title = document.querySelector('#detailedReview h3');
+
+            if (gameMode === 'exam') {
+                title.innerHTML = '📝 Exam Review - Click any question to see correct answers';
+            } else {
+                title.innerHTML = '📊 Training Review - Your answered questions';
+            }
+
+            container.innerHTML = currentQuestions.map((q, idx) => {
+                const ans = userAnswers[q.id] || [];
+                const isCorrect = q.type === 'multi' ? q.correct.every(c => ans.includes(c)) && ans.length === q.correct.length : q.correct.some(c => ans.includes(c));
+
+                return `
+                    <div class="border-l-4 ${isCorrect ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50'} p-4 rounded-lg ${gameMode === 'exam' ? 'cursor-pointer hover:shadow-lg transition' : ''}" id="review-item-${idx}" onclick="${gameMode === 'exam' ? `toggleReviewDetail(${idx})` : ''}">
+                        <div class="font-semibold mb-2">Q${idx + 1}: ${q.question}</div>
+                        <div class="text-sm"><span class="${isCorrect ? 'text-green-700' : 'text-red-700'}">Your answer: ${ans.join(', ') || 'Not answered'}</span></div>
+                        <div id="review-detail-${idx}" class="hidden mt-3 p-3 bg-white rounded-lg border border-gray-200"></div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleReviewDetail(idx) {
+            const detail = document.getElementById(`review-detail-${idx}`);
+            const q = currentQuestions[idx];
+            const ans = userAnswers[q.id] || [];
+            const isCorrect = q.type === 'multi' ? q.correct.every(c => ans.includes(c)) && ans.length === q.correct.length : q.correct.some(c => ans.includes(c));
+
+            if (detail.innerHTML === '') {
+                let html = isCorrect 
+                    ? '<div class="text-green-600 font-bold mb-2">✅ Correct!</div>' 
+                    : '<div class="text-red-600 font-bold mb-2">❌ Incorrect</div>';
+
+                const correctText = q.correct.map(c => {
+                    if (q.type === 'tf') return c === 'a' ? 'True' : 'False';
+                    if (q.options) { const opt = q.options.find(o => o.startsWith(c + ')')); return opt ? opt.substring(3) : c; }
+                    return c;
+                }).join(', ');
+
+                html += `<div class="text-blue-800 font-semibold mb-2">🎯 Correct Answer: ${correctText}</div>`;
+                if (q.explanation) html += `<div class="text-indigo-700 text-sm">💡 ${q.explanation}</div>`;
+
+                detail.innerHTML = html;
+                detail.classList.remove('hidden');
+            } else {
+                detail.classList.toggle('hidden');
+            }
+        }
+
+        function saveScore(name, score, xp, questions) {
+            let scores = JSON.parse(localStorage.getItem('examScores') || '[]');
+            scores.push({ name, score, xp, questions, date: new Date().toISOString(), emoji: selectedEmoji });
+            scores.sort((a, b) => b.score - a.score);
+            scores = scores.slice(0, 10);
+            localStorage.setItem('examScores', JSON.stringify(scores));
+        }
+
+        function showLeaderboard() {
+            const scores = JSON.parse(localStorage.getItem('examScores') || '[]');
+            const list = document.getElementById('leaderboardList');
+            list.innerHTML = scores.length === 0 ? '<div class="text-center text-gray-500">No scores yet!</div>' : 
+                scores.map((s, i) => `
+                    <div class="flex items-center gap-4 p-3 ${i === 0 ? 'bg-yellow-50 border-2 border-yellow-400 rounded-lg' : 'bg-gray-50 rounded-lg'}">
+                        <div class="text-2xl">${s.emoji || '🎓'}</div>
+                        <div class="text-xl font-bold ${i < 3 ? 'text-yellow-600' : 'text-gray-400'}">${i + 1}</div>
+                        <div class="flex-1"><div class="font-bold">${s.name}</div><div class="text-sm text-gray-500">${s.questions} questions</div></div>
+                        <div class="text-right"><div class="font-bold text-indigo-600">${s.score.toFixed(1)}/20</div><div class="text-sm text-gray-500">${s.xp} XP</div></div>
+                    </div>
+                `).join('');
+            document.getElementById('leaderboardModal').classList.remove('hidden');
+        }
+
+        function closeLeaderboard() { document.getElementById('leaderboardModal').classList.add('hidden'); }
+    </script>
+</body>
+</html>
