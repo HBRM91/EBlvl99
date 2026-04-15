@@ -1,0 +1,8 @@
+{
+  "name": "nova-ims-exam-simulator",
+  "version": "1.0.0",
+  "description": "NOVA IMS e-Business Exam Simulator with Training Manual",
+  "scripts": {
+    "start": "npx serve ."
+  }
+}
