@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#E60012">
+    <title>🍄 Super NOVA Exam Bros - Mobile Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --mario-red: #E60012;
+            --mario-blue: #009ACD;
+            --mario-green: #00AA00;
+            --mario-gold: #FFD700;
+            --sky-blue: #5C94FC;
+            --ground-brown: #8B4513;
+            --brick-red: #B7410E;
+        }
+
+        * { 
+            font-family: 'Inter', sans-serif; 
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        .pixel-font { 
+            font-family: 'Press Start 2P', cursive; 
+            line-height: 1.5;
+        }
+
+        body {
+            background: linear-gradient(180deg, #5C94FC 0%, #5C94FC 65%, #8B4513 65%, #654321 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .cloud {
+            position: fixed;
+            background: white;
+            border-radius: 50px;
+            opacity: 0.8;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes float-cloud {
+            from { transform: translateX(-200px); }
+            to { transform: translateX(calc(100vw + 200px)); }
+        }
+
+        .mario-card {
+            background: linear-gradient(135deg, #FFF8DC 0%, #FFFACD 100%);
+            border: 4px solid #E60012;
+            box-shadow: 0 8px 0 #8B0000, 0 15px 20px rgba(0,0,0,0.3);
+            border-radius: 12px;
+        }
+
+        @media (max-width: 640px) {
+            .mario-card {
+                border-width: 3px;
+                box-shadow: 0 4px 0 #8B0000, 0 8px 12px rgba(0,0,0,0.3);
+                border-radius: 8px;
+            }
+        }
+
+        .mario-btn {
+            background: linear-gradient(180deg, #E60012 0%, #B30000 100%);
+            border: 3px solid #8B0000;
+            box-shadow: 0 6px 0 #8B0000, 0 8px 15px rgba(0,0,0,0.3);
+            color: white;
+            text-shadow: 2px 2px 0 #000;
+            transition: all 0.1s;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 20px;
+            font-size: 16px;
+        }
+
+        .mario-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 0 0 #8B0000, 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .mario-btn.green {
+            background: linear-gradient(180deg, #00AA00 0%, #006400 100%);
+            border-color: #004d00;
+            box-shadow: 0 6px 0 #004d00, 0 8px 15px rgba(0,0,0,0.3);
+        }
+
+        .mario-btn.blue {
+            background: linear-gradient(180deg, #009ACD 0%, #00688B 100%);
+            border-color: #004d66;
+            box-shadow: 0 6px 0 #004d66, 0 8px 15px rgba(0,0,0,0.3);
+        }
+
+        .coin {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border: 3px solid #DAA520;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #B8860B;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            font-size: 14px;
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .coin.answered {
+            background: linear-gradient(135deg, #32CD32 0%, #228B22 100%);
+            border-color: #006400;
+            color: white;
+        }
+
+        .coin.current {
+            box-shadow: 0 0 0 4px #E60012, 0 0 15px rgba(230, 0, 18, 0.5);
+        }
+
+        .option-btn {
+            background: linear-gradient(135deg, #FFF8DC 0%, #FFE4B5 100%);
+            border: 3px solid #DEB887;
+            transition: all 0.2s;
+            min-height: 44px;
+            padding: 12px 16px;
+            font-size: 16px;
+            text-align: left;
+            width: 100%;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .option-btn.correct {
+            background: linear-gradient(135deg, #90EE90 0%, #32CD32 100%) !important;
+            border-color: #006400 !important;
+            color: #004d00;
+        }
+
+        .option-btn.wrong {
+            background: linear-gradient(135deg, #FFA07A 0%, #DC143C 100%) !important;
+            border-color: #8B0000 !important;
+            color: white;
+        }
+
+        .option-btn.selected {
+            background: linear-gradient(135deg, #87CEEB 0%, #009ACD 100%);
+            border-color: #00688B;
+            color: white;
+        }
+
+        .feedback-box {
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .feedback-box.correct {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border: 3px solid #28a745;
+            color: #155724;
+        }
+
+        .feedback-box.wrong {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            border: 3px solid #dc3545;
+            color: #721c24;
+        }
+
+        .explanation-box {
+            background: linear-gradient(135deg, #e7f3ff 0%, #d0e8ff 100%);
+            border: 2px solid #009ACD;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+            font-size: 14px;
+            color: #004d66;
+        }
+
+        .mobile-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 3px solid #00AA00;
+            padding: 8px 12px;
+        }
+
+        .mobile-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 3px solid #E60012;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .content-spacer {
+            padding-top: 80px;
+            padding-bottom: 80px;
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 44px;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 12px;
+            background: linear-gradient(90deg, #8B4513 0%, #CD5C5C 100%);
+            border-radius: 6px;
+            border: 2px solid #654321;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 36px;
+            width: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #E60012 0%, #8B0000 100%);
+            border: 3px solid #FFD700;
+            cursor: pointer;
+            margin-top: -14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .checkbox-custom {
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            border: 3px solid #E60012;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .checkbox-custom.checked {
+            background: #E60012;
+            color: white;
+        }
+
+        .question-card {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .question-card.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fire-power {
+            background: linear-gradient(90deg, #FF4500, #FFD700, #FF4500);
+            background-size: 200% 100%;
+            animation: fire-flow 2s linear infinite;
+            color: white;
+            text-shadow: 2px 2px 0 #000;
+            border: 2px solid #FF4500;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        @keyframes fire-flow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .confetti {
+            position: fixed;
+            font-size: 24px;
+            animation: confetti-fall 3s linear forwards;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .modal-content {
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .review-item {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .review-item:hover {
+            transform: translateX(5px);
+        }
+
+        .review-detail {
+            display: none;
+            margin-top: 8px;
+            padding: 12px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 8px;
+        }
+
+        .review-detail.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; max-height: 0; }
+            to { opacity: 1; max-height: 500px; }
+        }
+
+        .coin-nav {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding: 8px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 8px;
+            margin-bottom: 16px;
+            scrollbar-width: thin;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .coin-nav::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .coin-nav::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+            border-radius: 3px;
+        }
+
+        .coin-nav::-webkit-scrollbar-thumb {
+            background: rgba(230, 0, 18, 0.5);
+            border-radius: 3px;
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body class="text-gray-800">
+    <!-- Clouds -->
+    <div class="cloud" style="top: 5%; width: 100px; height: 40px; animation: float-cloud 25s infinite linear;"></div>
+    <div class="cloud" style="top: 15%; width: 80px; height: 35px; animation: float-cloud 30s infinite linear 5s;"></div>
+    <div class="cloud" style="top: 10%; width: 120px; height: 45px; animation: float-cloud 35s infinite linear 10s;"></div>
+
+    <!-- Header -->
+    <div id="headerBar" class="mobile-header hidden">
+        <div class="flex items-center justify-between text-white">
+            <div class="flex items-center gap-2">
+                <button onclick="confirmExit()" class="bg-gray-700 hover:bg-gray-600 text-white rounded-lg px-3 py-2 text-xs pixel-font border-2 border-gray-500">
+                    🏠
+                </button>
+                <div class="flex items-center gap-2">
+                    <span id="playerAvatar" class="text-xl">🍄</span>
+                    <span id="nameDisplay" class="pixel-font text-xs text-yellow-300 truncate max-w-[80px]">MARIO</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-1 bg-blue-900/50 px-2 py-1 rounded-full border-2 border-blue-400">
+                    <span class="coin text-xs">$</span>
+                    <span id="coinCount" class="pixel-font text-xs text-yellow-300">0</span>
+                </div>
+
+                <div id="firePowerIndicator" class="hidden fire-power">
+                    🔥<span id="streakCount">3</span>
+                </div>
+
+                <div class="pixel-font text-xs">
+                    <span class="text-red-400">⏱</span>
+                    <span id="timerValue" class="text-white">∞</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 max-w-4xl relative z-10">
+        <!-- Setup Screen -->
+        <div id="setupScreen" class="min-h-screen flex flex-col justify-center py-8">
+            <div class="text-center mb-6">
+                <h1 class="pixel-font text-2xl sm:text-3xl text-white mb-2" style="text-shadow: 4px 4px 0 #000, -2px -2px 0 #E60012;">
+                    🍄 SUPER NOVA<br>EXAM BROS
+                </h1>
+                <p class="text-white pixel-font text-xs mt-2 bg-black/30 inline-block px-3 py-2 rounded">NOVA IMS e-Business</p>
+            </div>
+
+            <div class="mario-card p-4 sm:p-6">
+                <div class="mb-4">
+                    <label class="pixel-font text-xs text-blue-800 block mb-2">PLAYER NAME</label>
+                    <input type="text" id="playerName" placeholder="MARIO" maxlength="10"
+                           class="w-full p-4 border-4 border-blue-400 rounded-lg pixel-font text-sm bg-yellow-50 uppercase">
+                </div>
+
+                <div class="mb-4">
+                    <label class="pixel-font text-xs text-blue-800 block mb-2">CHARACTER</label>
+                    <div class="grid grid-cols-5 sm:grid-cols-10 gap-2" id="emojiSelector"></div>
+                </div>
+
+                <div class="mb-4 grid grid-cols-2 gap-3">
+                    <button onclick="setMode('training')" id="btnTraining" class="mario-btn green py-3 rounded-xl pixel-font text-xs">
+                        🎓 TRAINING
+                    </button>
+                    <button onclick="setMode('exam')" id="btnExam" class="mario-btn py-3 rounded-xl pixel-font text-xs opacity-60">
+                        📝 EXAM
+                    </button>
+                </div>
+
+                <div class="space-y-4 mb-4 bg-blue-50/50 p-4 rounded-xl border-2 border-blue-200">
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <label class="pixel-font text-xs text-blue-800">QUESTIONS</label>
+                            <span class="pixel-font text-sm text-red-600" id="questionValue">50</span>
+                        </div>
+                        <input type="range" id="numQuestions" min="5" max="200" value="50" oninput="updateSlider('questionValue', this.value)">
+                    </div>
+
+                    <div id="timeSliderContainer">
+                        <div class="flex justify-between mb-2">
+                            <label class="pixel-font text-xs text-blue-800">TIME (MIN)</label>
+                            <span class="pixel-font text-sm text-red-600" id="timeValue">45</span>
+                        </div>
+                        <input type="range" id="customTime" min="5" max="180" value="45" oninput="updateSlider('timeValue', this.value)">
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" id="unlimitedTime" onchange="toggleUnlimitedTime()" class="w-6 h-6 accent-red-600">
+                        <label for="unlimitedTime" class="pixel-font text-xs text-blue-800">⏱️ UNLIMITED TIME</label>
+                    </div>
+                </div>
+
+                <button onclick="startGame()" class="w-full mario-btn py-4 rounded-xl pixel-font text-base mb-3">
+                    🚀 START GAME!
+                </button>
+
+                <button onclick="showLeaderboard()" class="w-full mario-btn blue py-3 rounded-xl pixel-font text-xs">
+                    🏆 HIGH SCORES
+                </button>
+                <button onclick="showTrainingManual()" class="w-full mario-btn text-xs py-3 rounded-xl pixel-font mt-3" style="background: linear-gradient(180deg, #9333ea 0%, #6b21a8 100%); border-color: #581c87;">
+                    📖 TRAINING MANUAL
+                </button>
+            </div>
+        </div>
+
+        <!-- Exam Screen -->
+        <div id="examScreen" class="hidden content-spacer">
+            <div class="coin-nav" id="quickNav"></div>
+            <div id="questionsContainer"></div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="resultsScreen" class="hidden content-spacer">
+            <div class="mario-card p-4 sm:p-6 text-center">
+                <div class="text-5xl mb-4" id="resultEmoji">🏆</div>
+                <h2 class="pixel-font text-xl text-blue-800 mb-4">COURSE CLEAR!</h2>
+
+                <div class="relative inline-block mb-6">
+                    <svg class="w-32 h-32 sm:w-40 sm:h-40 transform -rotate-90">
+                        <circle cx="50%" cy="50%" r="45%" fill="none" stroke="#e5e7eb" stroke-width="10"/>
+                        <circle id="scoreCircle" cx="50%" cy="50%" r="45%" fill="none" 
+                                stroke="url(#scoreGradient)" stroke-width="10" stroke-dasharray="283" 
+                                stroke-dashoffset="283" stroke-linecap="round" class="transition-all duration-1000"/>
+                        <defs>
+                            <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#FFD700"/>
+                                <stop offset="100%" stop-color="#FF6347"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                        <span class="pixel-font text-3xl text-blue-800" id="finalScore">0</span>
+                        <span class="pixel-font text-xs text-gray-500">/ 20</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6">
+                    <div class="bg-green-100 border-2 border-green-500 rounded-lg p-2">
+                        <div class="pixel-font text-[10px] text-green-700">COINS</div>
+                        <div class="pixel-font text-lg text-green-800" id="statCoins">0</div>
+                    </div>
+                    <div class="bg-blue-100 border-2 border-blue-500 rounded-lg p-2">
+                        <div class="pixel-font text-[10px] text-blue-700">TIME</div>
+                        <div class="pixel-font text-sm text-blue-800" id="statTime">0:00</div>
+                    </div>
+                    <div class="bg-purple-100 border-2 border-purple-500 rounded-lg p-2">
+                        <div class="pixel-font text-[10px] text-purple-700">STREAK</div>
+                        <div class="pixel-font text-lg text-purple-800" id="statStreak">0</div>
+                    </div>
+                    <div class="bg-yellow-100 border-2 border-yellow-500 rounded-lg p-2">
+                        <div class="pixel-font text-[10px] text-yellow-700">RANK</div>
+                        <div class="pixel-font text-lg text-yellow-800" id="statRank">F</div>
+                    </div>
+                </div>
+
+                <div id="achievementsSection" class="hidden mb-6">
+                    <h3 class="pixel-font text-xs text-blue-800 mb-3">TROPHIES</h3>
+                    <div class="flex flex-wrap justify-center gap-2" id="earnedBadges"></div>
+                </div>
+
+                <div class="flex gap-3 justify-center">
+                    <button onclick="location.reload()" class="mario-btn px-4 py-3 rounded-xl pixel-font text-xs">🔄 AGAIN</button>
+                    <button onclick="showLeaderboard()" class="mario-btn blue px-4 py-3 rounded-xl pixel-font text-xs">🏆 SCORES</button>
+                </div>
+            </div>
+
+            <div class="mt-4 mario-card p-4 sm:p-6" id="detailedReview">
+                <h3 class="pixel-font text-sm text-blue-800 mb-4 text-center">📊 REVIEW<br><span class="text-xs text-gray-500">(Tap to expand)</span></h3>
+                <div id="reviewContent" class="space-y-3 max-h-[60vh] overflow-y-auto"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div id="mobileNav" class="mobile-nav hidden">
+        <button onclick="prevQuestion()" class="mario-btn bg-gray-600 text-xs">← PREV</button>
+        <button onclick="submitExam()" class="mario-btn green text-sm">✅ FINISH</button>
+        <button onclick="nextQuestion()" class="mario-btn text-xs">NEXT →</button>
+    </div>
+
+    <!-- Modals -->
+    <div id="leaderboardModal" class="modal-overlay hidden" onclick="if(event.target===this)closeLeaderboard()">
+        <div class="mario-card modal-content p-4">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="pixel-font text-sm text-blue-800">🏆 HALL OF FAME</h2>
+                <button onclick="closeLeaderboard()" class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-xl">×</button>
+            </div>
+            <div id="leaderboardList" class="space-y-2"></div>
+        </div>
+    </div>
+
+    <div id="exitModal" class="modal-overlay hidden" onclick="if(event.target===this)confirmExitNo()">
+        <div class="mario-card modal-content p-6 text-center">
+            <div class="text-4xl mb-4">🍄</div>
+            <h2 class="pixel-font text-sm text-blue-800 mb-4">RETURN TO MENU?</h2>
+            <p class="text-xs text-gray-600 mb-6">Progress will be lost!</p>
+            <div class="flex gap-3">
+                <button onclick="confirmExitYes()" class="flex-1 mario-btn py-3 rounded-lg pixel-font text-xs">YES</button>
+                <button onclick="confirmExitNo()" class="flex-1 mario-btn blue py-3 rounded-lg pixel-font text-xs">NO</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questionBank = [
+{id: 1, type: 'tf', question: `The Third Platform consists of Cloud, Big Data/Analytics, Social Business, and Mobility technologies.`, correct: ['a'], points: 0.2, explanation: `The Third Platform (IDC Framework) = Cloud + Big Data/Analytics + Mobility + Social Business. IoT/AI are Innovation Accelerators built ON TOP, not core components. ⚠️ EXAM TRAP: Don't confuse with 2nd Platform (LAN/Client-Server)!`},
+            {id: 2, type: 'tf', question: `Digital Transformation is only about implementing new technologies without changing business processes.`, correct: ['b'], points: 0.2, explanation: `Digital Transformation = Business model reinvention using tech (70% culture, 20% process, 10% technology). It's NOT just implementing tools—it's rethinking processes and customer experiences. Per the Magic Hexagon, this affects both Operational Excellence (ERP) and Competitive Advantage (e-Commerce).`},
+            {id: 3, type: 'tf', question: `The First Platform was characterized by mainframe computers and terminal-based access.`, correct: ['a'], points: 0.2, explanation: `1st Platform (1950s-1980s) = Mainframe era with dumb terminals. Know the progression: 1st (Mainframe) → 2nd (Client-Server/LAN) → 3rd (Cloud/Mobile/Social).`},
+            {id: 4, type: 'tf', question: `The Second Platform introduced client-server architecture and LAN-based computing.`, correct: ['a'], points: 0.2, explanation: `2nd Platform (1980s-2000s) brought PCs, client-server architecture, and LAN-based computing. This preceded the 3rd Platform (Cloud/Big Data/Mobile/Social).`},
+            {id: 5, type: 'tf', question: `IoT (Internet of Things) is considered part of the Third Platform.`, correct: ['b'], points: 0.2, explanation: `⚠️ EXAM TRAP: IoT is an Innovation Accelerator, NOT part of the core Third Platform! The 3rd Platform = Cloud + Big Data + Mobility + Social. Accelerators (IoT, AI, Blockchain, 3D Printing) build ON TOP of the 3rd Platform.`},
+            {id: 6, type: 'mc', question: `Which of these is NOT a component of the Third Platform?`, options: [`a) Cloud Computing`, `b) Artificial Intelligence`, `c) Big Data Analytics`, `d) Social Business`], correct: ['b'], points: 0.2, explanation: `AI is an Innovation Accelerator, not a core 3rd Platform component! Core = Cloud, Big Data/Analytics, Mobile, Social. AI/ML sits on top as an accelerator. Per the Magic Hexagon, Commerce AI drives Competitive Advantage (CMO focus), not Operational Excellence.`},
+            {id: 7, type: 'mc', question: `What percentage of B2B sales interactions will be digital by 2025 according to Gartner?`, options: [`a) 50%`, `b) 65%`, `c) 80%`, `d) 95%`], correct: ['c'], points: 0.2, explanation: `Gartner predicts 80% of B2B sales interactions will be digital by 2025. This drives the need for SAP Commerce Cloud and integrated CRM/ERP (Digital Core).`},
+            {id: 8, type: 'multi', question: `Select all Innovation Accelerators built on the Third Platform:`, options: [`a) Internet of Things (IoT)`, `b) Cognitive Systems/AI`, `c) 3D Printing`, `d) Robots`, `e) Cloud Computing`], correct: ['a', 'b', 'c', 'd'], points: 0.2, explanation: `Innovation Accelerators = IoT, AI/Cognitive, 3D Printing, Robotics, Blockchain. These extend the 3rd Platform. Cloud is the FOUNDATION (3rd Platform), not an accelerator. Stakeholder: CIO manages these via System of Engagement.`},
+            {id: 9, type: 'dropdown', question: `The shift from product-centric to _____-centric business models is a key aspect of digital transformation.`, options: [`Customer`, `Technology`, `Cost`, `Employee`], correct: ['Customer'], points: 0.2, explanation: `Digital transformation shifts from product-centric to CUSTOMER-centric models. This is the CRO/CMO domain (System of Experience). In SAP Activate Discover phase, CEO and CMO are both 'Critical' stakeholders.`},
+            {id: 10, type: 'tf', question: `Blockchain is considered an Innovation Accelerator technology.`, correct: ['a'], points: 0.2, explanation: `Blockchain is indeed an Innovation Accelerator (like IoT, AI, 3D Printing). It provides distributed ledger capabilities on top of the 3rd Platform for supply chain transparency and smart contracts.`},
+            {id: 11, type: 'mc', question: `What does 'SMAC' stand for in digital business terminology?`, options: [`a) Social, Mobile, Analytics, Cloud`, `b) Sales, Marketing, Analytics, Customers`, `c) Strategy, Management, Analytics, Computing`, `d) Security, Mobile, Apps, Cloud`], correct: ['a'], points: 0.2, explanation: `SMAC = Social, Mobile, Analytics, Cloud—the four pillars of the Third Platform coined by IDC. This is foundational vocabulary for the exam!`},
+            {id: 12, type: 'tf', question: `Digital transformation requires changes in company culture, not just technology adoption.`, correct: ['a'], points: 0.2, explanation: `Digital transformation is 70% culture/people, 20% process, 10% technology. The 'Magic Hexagon' shows e-Business requires both Operational Excellence (culture/process) and Competitive Advantage (tech) focus areas.`},
+            {id: 13, type: 'mc', question: `Which consulting firm coined the term 'Third Platform'?`, options: [`a) Gartner`, `b) IDC`, `c) McKinsey`, `d) Deloitte`], correct: ['b'], points: 0.2, explanation: `IDC (International Data Corporation) coined 'Third Platform' in 2007. Know your analysts: IDC = 3rd Platform, Gartner = 80% B2B digital prediction.`},
+            {id: 14, type: 'multi', question: `Key characteristics of digital businesses include:`, options: [`a) Data-driven decision making`, `b) Agile processes`, `c) Customer-centricity`, `d) Fixed organizational structures`, `e) Ecosystem-based competition`], correct: ['a', 'b', 'c', 'e'], points: 0.2, explanation: `Digital business = Data-driven (Analytics), Agile (SCRUM/SAP Activate), Customer-centric (CRM), Ecosystem-based. Fixed structures are ANTI-digital—agility is key!`},
+            {id: 15, type: 'tf', question: `The Fourth Industrial Revolution (Industry 4.0) is primarily about automation and data exchange in manufacturing.`, correct: ['a'], points: 0.2, explanation: `Industry 4.0 = Cyber-physical systems, IoT, cloud, AI in manufacturing. It's the INDUSTRIAL application of the 3rd Platform. This connects to D2O (Design to Operate) process.`},
+            {id: 16, type: 'mc', question: `What percentage of the world's data was created in the last two years?`, options: [`a) 30%`, `b) 50%`, `c) 70%`, `d) 90%`], correct: ['d'], points: 0.2, explanation: `90% of world's data created in last 2 years! This drives need for Big Data Analytics (3rd Platform) and SAP HANA in-memory processing (part of S/4HANA Digital Core).`},
+            {id: 17, type: 'tf', question: `Edge computing brings computation and data storage closer to the sources of data.`, correct: ['a'], points: 0.2, explanation: `Edge computing = processing data near source (IoT devices) to reduce latency. Critical for real-time SCM and manufacturing (System of Visibility/COO domain).`},
+            {id: 18, type: 'mc', question: `Which term describes the integration of digital technology into all areas of business?`, options: [`a) Digitization`, `b) Digitalization`, `c) Digital Transformation`, `d) All of the above`], correct: ['d'], points: 0.2, explanation: `All terms valid: Digitization (analog→digital), Digitalization (using digital tools), Digital Transformation (business model change). Hierarchy: Digitization < Digitalization < Transformation.`},
+            {id: 19, type: 'multi', question: `Barriers to digital transformation include:`, options: [`a) Legacy systems`, `b) Cybersecurity concerns`, `c) Skills gaps`, `d) Unlimited budget`, `e) Resistance to change`], correct: ['a', 'b', 'c', 'e'], points: 0.2, explanation: `Barriers = Legacy systems (hard to integrate), Security concerns (GDPR/DORA), Skills gaps (need SAP Activate expertise), Resistance to change (70% culture issue!). Unlimited budget would HELP, not hinder!`},
+            {id: 20, type: 'tf', question: `APIs (Application Programming Interfaces) enable different software systems to communicate.`, correct: ['a'], points: 0.2, explanation: `APIs are the 'glue' of digital business, enabling the Magic Hexagon connections (ERP↔CRM↔e-Commerce). Critical for integration patterns in SAP BTP (Business Technology Platform).`},
+            {id: 21, type: 'tf', question: `e-Commerce is a subset of e-Business.`, correct: ['a'], points: 0.2, explanation: `⚠️ EXAM TRAP: e-Business (superset) includes ALL electronic processes; e-Commerce (subset) is just buying/selling. Per Magic Hexagon: e-Business encompasses ERP (internal) + e-Commerce (external). They are NOT synonyms!`},
+            {id: 22, type: 'tf', question: `e-Business only includes external-facing activities like sales and marketing.`, correct: ['b'], points: 0.2, explanation: `e-Business includes BOTH external (sales/marketing) AND internal (HR, Finance, SCM) processes. This is the 'Digital Core' concept—ERP handles internal, CRM/e-Commerce handle external.`},
+            {id: 23, type: 'mc', question: `Which is an example of e-Business but NOT e-Commerce?`, options: [`a) Online shopping`, `b) Electronic payments`, `c) Internal email system`, `d) Online marketplace`], correct: ['c'], points: 0.2, explanation: `Internal email = e-Business (electronic process) but NOT e-Commerce (no transaction). Online shopping/payments/marketplaces ARE e-Commerce. Tests the superset vs subset relationship!`},
+            {id: 24, type: 'multi', question: `Activities covered by e-Business include:`, options: [`a) Online procurement`, `b) CRM`, `c) Supply chain management`, `d) Digital marketing`, `e) Internal collaboration tools`], correct: ['a', 'b', 'c', 'd', 'e'], points: 0.2, explanation: `e-Business encompasses: Procurement (e-Procurement), CRM (customer relations), SCM (supply chain), Digital marketing, Collaboration tools. All six e-Business Suite components!`},
+            {id: 25, type: 'dropdown', question: `B2C stands for Business-to-_____.`, options: [`Consumer`, `Company`, `Client`, `Customer`], correct: ['Consumer'], points: 0.2, explanation: `B2C = Business-to-Consumer (retail). Other models: B2B (business), C2C (consumer eBay), B2G (government), D2C (direct to consumer).`},
+            {id: 26, type: 'tf', question: `C2C (Consumer-to-Consumer) platforms include eBay and Etsy.`, correct: ['a'], points: 0.2, explanation: `C2C = Consumer-to-Consumer via platforms like eBay, Etsy, Facebook Marketplace. These are 'peer-to-peer' e-Commerce models enabled by the 3rd Platform (Social/Mobile).`},
+            {id: 27, type: 'mc', question: `B2B e-commerce typically involves:`, options: [`a) Impulse purchases`, `b) Longer sales cycles`, `c) Single buyer decisions`, `d) Standardized products only`], correct: ['b'], points: 0.2, explanation: `B2B characteristics = Longer sales cycles (L2C process), Multiple decision makers, Complex negotiations, Higher AOV (Average Order Value), Recurring relationships. B2C = impulse purchases, single buyers.`},
+            {id: 28, type: 'tf', question: `Omnichannel retail provides a seamless experience across online and offline channels.`, correct: ['a'], points: 0.2, explanation: `Omnichannel = seamless integrated experience across ALL channels (web, mobile, store, social). This is the holy grail of modern e-Commerce enabled by unified commerce platforms like SAP Commerce Cloud.`},
+            {id: 29, type: 'multi', question: `Key e-Commerce business models include:`, options: [`a) Dropshipping`, `b) Subscription`, `c) Marketplace`, `d) White-label`, `e) All of the above`], correct: ['e'], points: 0.2, explanation: `All valid e-Commerce models: Dropshipping (no inventory), Subscription (recurring), Marketplace (platform), White-label (rebranding). Know these for B2C strategy questions!`},
+            {id: 30, type: 'mc', question: `What is the difference between multichannel and omnichannel?`, options: [`a) No difference`, `b) Multichannel has separate channels; omnichannel integrates them`, `c) Omnichannel is online-only`, `d) Multichannel is cheaper`], correct: ['b'], points: 0.2, explanation: `⚠️ EXAM TRAP: Multichannel = separate channels operating independently. Omnichannel = integrated, seamless experience. Omnichannel requires unified Digital Core (ERP+CRM) with real-time inventory visibility.`},
+            {id: 31, type: 'tf', question: `Electronic Data Interchange (EDI) is a form of e-Business predating the internet.`, correct: ['a'], points: 0.2, explanation: `EDI (Electronic Data Interchange) from 1970s is pre-internet e-Business for B2B document exchange. It predates XML/JSON APIs but is still used in manufacturing/supply chain.`},
+            {id: 32, type: 'mc', question: `Mobile commerce (m-commerce) refers to:`, options: [`a) Shopping on desktop computers`, `b) Transactions via mobile devices`, `c) Phone-based customer service`, `d) Mobile marketing only`], correct: ['b'], points: 0.2, explanation: `M-Commerce = transactions via smartphones/tablets. Critical for B2C—mobile conversion optimization is key. Part of 3rd Platform 'Mobility' pillar.`},
+            {id: 33, type: 'tf', question: `Social commerce involves selling directly through social media platforms.`, correct: ['a'], points: 0.2, explanation: `Social commerce = selling through social platforms (Instagram Shopping, TikTok Shop, FB Marketplace). Combines Social Business (3rd Platform) with e-Commerce (Competitive Advantage).`},
+            {id: 34, type: 'multi', question: `Benefits of e-Business include:`, options: [`a) Global reach`, `b) 24/7 availability`, `c) Reduced transaction costs`, `d) Personalized marketing`, `e) All of the above`], correct: ['e'], points: 0.2, explanation: `e-Business benefits: Global reach (24/7), Lower costs (automation), Personalization (AI/Analytics), Speed. These drive the 250-350% ROI and 12-18 month payback periods!`},
+            {id: 35, type: 'dropdown', question: `The _____ model involves selling excess inventory to consumers at discounted prices.`, options: [`Flash sales`, `Subscription`, `Dropshipping`, `Affiliate`], correct: ['Flash sales'], points: 0.2, explanation: `Flash sales = limited-time deep discounts (Groupon model) for excess inventory. Different from subscription (recurring) or dropshipping (fulfillment model).`},
+            {id: 36, type: 'tf', question: `Cross-border e-commerce involves selling to customers in different countries.`, correct: ['a'], points: 0.2, explanation: `Cross-border e-Commerce = international sales, requiring multi-currency, localization, tax compliance (VAT), and global logistics. SAP Commerce Cloud supports this.`},
+            {id: 37, type: 'mc', question: `What is 'headless commerce'?`, options: [`a) Commerce without a website`, `b) Decoupling frontend presentation from backend commerce`, `c) Physical retail only`, `d) Voice commerce`], correct: ['b'], points: 0.2, explanation: `Headless commerce = decoupled frontend (presentation) from backend (commerce engine) via APIs. Enables multiple touchpoints (web, mobile, IoT, voice) from single backend. Modern architecture pattern!`},
+            {id: 38, type: 'tf', question: `The 'long tail' theory suggests e-commerce enables profitable sales of niche products.`, correct: ['a'], points: 0.2, explanation: `Long tail theory = online stores profitably sell niche products that physical stores can't stock. Enabled by unlimited 'shelf space' and search/discovery tools in e-Commerce.`},
+            {id: 39, type: 'multi', question: `Payment methods in e-commerce include:`, options: [`a) Credit cards`, `b) Digital wallets`, `c) Buy Now Pay Later (BNPL)`, `d) Cryptocurrency`, `e) Cash on delivery`], correct: ['a', 'b', 'c', 'd', 'e'], points: 0.2, explanation: `Payment diversity is key: Credit cards (traditional), Digital wallets (PayPal, Apple Pay), BNPL (Klarna, Affirm), Crypto (Bitcoin), COD (emerging markets). Reduce cart abandonment by offering options!`},
+            {id: 40, type: 'mc', question: `Which metric measures the percentage of visitors who make a purchase?`, options: [`a) CTR`, `b) Conversion rate`, `c) Bounce rate`, `d) Session duration`], correct: ['b'], points: 0.2, explanation: `Conversion rate = visitors who purchase. Industry average 2-3%, but optimized e-Commerce with personalization can achieve +15-60% improvement (per metrics cheat sheet).`},
+            {id: 41, type: 'tf', question: `ERP stands for Enterprise Resource Planning.`, correct: ['a'], points: 0.2, explanation: `ERP = Enterprise Resource Planning. It is the CENTER of the Magic Hexagon, connecting to Finance (CFO), Supply Chain (COO), Procurement, HR, and Sustainability systems.`},
+            {id: 42, type: 'tf', question: `The primary goal of ERP is to achieve competitive advantage through product differentiation.`, correct: ['b'], points: 0.2, explanation: `⚠️ EXAM TRAP: ERP focuses on OPERATIONAL EXCELLENCE (efficiency, cost reduction), NOT Competitive Advantage! CFO/COO focus. Differentiation is CMO/CRO focus via e-Commerce/CRM. Don't confuse these!`},
+            {id: 43, type: 'mc', question: `Which is NOT a typical ERP module?`, options: [`a) Finance/Accounting`, `b) HR/HCM`, `c) Manufacturing`, `d) Product Design R&D`], correct: ['d'], points: 0.2, explanation: `PLM (Product Lifecycle Management) handles R&D/design—it's pre-ERP. ERP modules = Finance (FICO), HR (HCM), Manufacturing, SCM, Procurement. Know the boundary between design and execution!`},
+            {id: 44, type: 'multi', question: `Core ERP modules include:`, options: [`a) Financial Management`, `b) Human Capital Management`, `c) Supply Chain Management`, `d) Customer Relationship Management`, `e) Procurement`], correct: ['a', 'b', 'c', 'e'], points: 0.2, explanation: `Core ERP = FICO (Finance), HCM (HR), SCM (Supply Chain), Procurement (MM). CRM is often separate or integrated but conceptually distinct (System of Experience vs System of Control).`},
+            {id: 45, type: 'dropdown', question: `SAP S/4HANA uses the _____ database for real-time analytics.`, options: [`HANA`, `Oracle`, `SQL Server`, `MongoDB`], correct: ['HANA'], points: 0.2, explanation: `SAP HANA = High-Performance Analytic Appliance (in-memory database). Enables real-time analytics in S/4HANA vs batch processing in old ECC. 99.7% uptime SLA with cloud deployment.`},
+            {id: 46, type: 'tf', question: `ERP systems replace legacy systems with a single integrated database.`, correct: ['a'], points: 0.2, explanation: `ERP creates 'single source of truth' via one integrated database. Eliminates silos, duplicates, and inconsistencies. The 'Golden Record' concept for master data management.`},
+            {id: 47, type: 'mc', question: `What percentage of global transaction revenue touches an SAP system?`, options: [`a) 50%`, `b) 65%`, `c) 77%`, `d) 90%`], correct: ['c'], points: 0.2, explanation: `77% of global transaction revenue touches SAP! This market dominance makes SAP skills critical. SAP is leader in Gartner Magic Quadrant for ERP.`},
+            {id: 48, type: 'tf', question: `Legacy ERP systems were primarily designed for batch processing, not real-time.`, correct: ['a'], points: 0.2, explanation: `Legacy ERP (R/3, ECC) used batch processing overnight. S/4HANA with HANA is REAL-TIME. This enables 'Sense and Respond' automation vs 'Batch and Wait' reporting.`},
+            {id: 49, type: 'multi', question: `Benefits of ERP implementation include:`, options: [`a) Process standardization`, `b) Improved data visibility`, `c) Reduced operational costs`, `d) Instant implementation`, `e) Better compliance`], correct: ['a', 'b', 'c', 'e'], points: 0.2, explanation: `ERP benefits: Standardization (Fit-to-Standard), Visibility (Golden Record), Cost reduction (Operational Excellence), Compliance (SOX, GDPR). Implementation takes months (SAP Activate methodology)!`},
+            {id: 50, type: 'mc', question: `What does 'Postmodern ERP' refer to?`, options: [`a) ERP from the 1990s`, `b) A mix of cloud and on-premise best-of-breed solutions`, `c) ERP without databases`, `d) Free open-source ERP`], correct: ['b'], points: 0.2, explanation: `Postmodern ERP = hybrid cloud/on-premise mix of best-of-breed solutions via APIs. Not single-vendor suite. Uses SAP BTP for integration between S/4HANA and specialized SaaS.`},
+            {id: 51, type: 'tf', question: `Two-tier ERP involves maintaining a core ERP at HQ and different ERPs at subsidiaries.`, correct: ['a'], points: 0.2, explanation: `Two-tier ERP = Tier 1 (HQ, complex S/4HANA) + Tier 2 (subsidiaries, lighter/cloud) for cost efficiency. Common in large enterprises with distributed operations.`},
+            {id: 52, type: 'dropdown', question: `The CFO is associated with the System of _____ in the e-Business Suite.`, options: [`Control`, `Visibility`, `Experience`, `Innovation`], correct: ['Control'], points: 0.2, explanation: `⚠️ EXAM TRAP: CFO = System of CONTROL (financial reporting, compliance, accounting). COO = System of VISIBILITY (operations, supply chain). CMO = System of EXPERIENCE (customer journeys).`},
+            {id: 53, type: 'mc', question: `Which vendor is the largest ERP provider by market share?`, options: [`a) Oracle`, `b) Microsoft`, `c) SAP`, `d) Salesforce`], correct: ['c'], points: 0.2, explanation: `SAP is the largest ERP vendor globally, especially in large enterprises. Oracle, Microsoft Dynamics, Infor are competitors. SAP's strength is deep industry-specific functionality.`},
+            {id: 54, type: 'tf', question: `Cloud ERP offers faster implementation and lower upfront costs than on-premise ERP.`, correct: ['a'], points: 0.2, explanation: `Cloud ERP (SaaS) offers faster implementation (SAP Activate), lower upfront costs (subscription vs license), automatic updates, but less customization than on-premise. 99.7% uptime SLA.`},
+            {id: 55, type: 'multi', question: `Challenges of ERP implementation include:`, options: [`a) High costs`, `b) Business process reengineering`, `c) Change management`, `d) Data migration`, `e) All of the above`], correct: ['e'], points: 0.2, explanation: `ERP implementation challenges: High costs (TCO), Business process reengineering (Fit-to-Standard vs customization), Change management (70% culture), Data migration (Golden Record creation), Integration complexity.`},
+            {id: 56, type: 'mc', question: `What is the 'Golden Record' in ERP?`, options: [`a) A backup tape`, `b) A single trusted view of master data`, `c) A financial audit report`, `d) A user manual`], correct: ['b'], points: 0.2, explanation: `Golden Record = single trusted view of master data (customer, product, vendor). Critical for eliminating duplicates and ensuring data consistency across the enterprise. MDM (Master Data Management) maintains this.`},
+            {id: 57, type: 'tf', question: `ERPII (Extended ERP) includes CRM, SCM, and e-commerce capabilities.`, correct: ['a'], points: 0.2, explanation: `ERPII (Extended ERP) includes external stakeholders via CRM (customers), SCM (suppliers), e-Commerce (partners). Extends beyond the 'four walls' of the enterprise.`},
+            {id: 58, type: 'mc', question: `What is a 'System of Record'?`, options: [`a) An accounting book`, `b) The authoritative data source for a subject`, `c) A backup system`, `d) A reporting tool`], correct: ['b'], points: 0.2, explanation: `System of Record = authoritative data source for a subject area. ERP is usually the system of record for financial and operational data; CRM for customer data.`},
+            {id: 59, type: 'multi', question: `Deployment options for ERP include:`, options: [`a) On-premise`, `b) Cloud/SaaS`, `c) Hybrid`, `d) Edge`, `e) All except edge`], correct: ['a', 'b', 'c'], points: 0.2, explanation: `ERP deployment: On-premise (full control, high cost), Cloud/SaaS (subscription, fast deployment), Hybrid (mixed). 'Edge' is an IoT concept, not ERP deployment.`},
+            {id: 60, type: 'tf', question: `SAP R/3 was the client-server version of SAP ERP before S/4HANA.`, correct: ['a'], points: 0.2, explanation: `SAP R/3 (1992) was client-server predecessor to S/4HANA (2015). R/3 used any database; S/4HANA requires HANA. Migration paths: Greenfield (new), Brownfield (upgrade), Selective (hybrid).`},
+            {id: 61, type: 'dropdown', question: `The COO is associated with the System of _____.`, options: [`Visibility`, `Control`, `Experience`, `Record`], correct: ['Visibility'], points: 0.2, explanation: `⚠️ EXAM TRAP: COO = System of VISIBILITY (supply chain, production tracking, operations monitoring). CFO = System of CONTROL (financial compliance). Know the stakeholder-system mappings!`},
+            {id: 62, type: 'mc', question: `What drives the move from ERP to Intelligent ERP?`, options: [`a) Cheaper hardware`, `b) AI, ML, and IoT integration`, `c) Fewer regulations`, `d) Smaller data volumes`], correct: ['b'], points: 0.2, explanation: `Intelligent ERP = S/4HANA with embedded AI/ML (SAP Business AI) and IoT. Enables predictive maintenance, automated matching, intelligent approvals. Part of 'Digital Core' evolution.`},
+            {id: 63, type: 'tf', question: `Best-of-breed ERP strategy selects the best application for each function from different vendors.`, correct: ['a'], points: 0.2, explanation: `Best-of-breed = select best application for each function from different vendors (e.g., Salesforce CRM + SAP ERP + Workday HCM) vs single-vendor suite. Requires strong integration (SAP BTP).`},
+            {id: 64, type: 'multi', question: `ERP selection criteria should include:`, options: [`a) Total Cost of Ownership`, `b) Scalability`, `c) Industry fit`, `d) Vendor viability`, `e) All of the above`], correct: ['e'], points: 0.2, explanation: `ERP selection criteria: TCO (Total Cost of Ownership - 5 year view), Scalability (growth), Industry fit (best practices), Vendor viability (SAP is safe choice).`},
+            {id: 65, type: 'mc', question: `What does TCO stand for in ERP evaluation?`, options: [`a) Technical Control Officer`, `b) Total Cost of Ownership`, `c) Transaction Cost Optimization`, `d) Time to Complete Operation`], correct: ['b'], points: 0.2, explanation: `TCO = Total Cost of Ownership includes software licenses/subscriptions, hardware (if on-prem), implementation services, training, maintenance, upgrades over 5-10 years. Cloud reduces TCO 20-30% typically.`},
+            {id: 66, type: 'tf', question: `CRM stands for Customer Relationship Management.`, correct: ['a'], points: 0.2, explanation: `CRM = Customer Relationship Management. Manages interactions with current and potential customers. Part of the 'Magic Hexagon' alongside ERP (Digital Core) and e-Commerce.`},
+            {id: 67, type: 'tf', question: `CRM is primarily focused on operational excellence and cost reduction.`, correct: ['b'], points: 0.2, explanation: `⚠️ EXAM TRAP: CRM focuses on Customer Intimacy (relationship building, retention, experience), NOT Operational Excellence! CRO/CMO focus, not CFO. Drives Competitive Advantage through differentiation.`},
+            {id: 68, type: 'mc', question: `Which is NOT a main type of CRM?`, options: [`a) Operational CRM`, `b) Analytical CRM`, `c) Collaborative CRM`, `d) Financial CRM`], correct: ['d'], points: 0.2, explanation: `CRM types: Operational (automation), Analytical (data mining), Collaborative (sharing across org). 'Financial CRM' is not a standard type—financial data lives in ERP (System of Control).`},
+            {id: 69, type: 'multi', question: `Operational CRM includes:`, options: [`a) Sales Force Automation`, `b) Marketing Automation`, `c) Service Automation`, `d) Data mining`, `e) Campaign management`], correct: ['a', 'b', 'c'], points: 0.2, explanation: `Operational CRM = Sales Force Automation (SFA), Marketing Automation (campaigns), Service Automation (support). Front-office automation that feeds the Digital Core.`},
+            {id: 70, type: 'dropdown', question: `The CMO is associated with the System of _____.`, options: [`Experience`, `Control`, `Visibility`, `Record`], correct: ['Experience'], points: 0.2, explanation: `⚠️ EXAM TRAP: CMO = System of EXPERIENCE (customer journeys, engagement, marketing campaigns). Uses CRM and e-Commerce platforms. Focuses on Competitive Advantage, not Operational Excellence!`},
+            {id: 71, type: 'tf', question: `Analytical CRM uses data mining and BI to analyze customer behavior.`, correct: ['a'], points: 0.2, explanation: `Analytical CRM uses data mining, BI, AI to analyze customer behavior for segmentation, churn prediction, cross-selling. Feeds into 'Sense and Respond' capabilities.`},
+            {id: 72, type: 'mc', question: `What is the primary goal of CRM?`, options: [`a) Reduce production costs`, `b) Improve customer relationships and retention`, `c) Optimize inventory`, `d) Automate accounting`], correct: ['b'], points: 0.2, explanation: `CRM goal = Improve customer satisfaction, retention, and lifetime value (CLV). Retaining customers is 5-25x cheaper than acquiring new ones. Drives the 2× revenue growth for CX Leaders!`},
+            {id: 73, type: 'tf', question: `Sales Force Automation (SFA) is a component of Operational CRM.`, correct: ['a'], points: 0.2, explanation: `Sales Force Automation (SFA) manages pipelines, contacts, forecasting, activity tracking. Core component of Operational CRM. Integrates with ERP for order history and pricing.`},
+            {id: 74, type: 'multi', question: `CRM benefits include:`, options: [`a) Improved customer satisfaction`, `b) Increased sales`, `c) Better customer retention`, `d) Reduced employee turnover`, `e) Shorter sales cycles`], correct: ['a', 'b', 'c', 'e'], points: 0.2, explanation: `CRM benefits: Satisfaction (↑), Sales (↑), Retention (↑), Shorter cycles (↓). Employee turnover is an HR metric (HCM), not a direct CRM metric—though happy customers correlate with happy employees!`},
+            {id: 75, type: 'mc', question: `A 360-degree customer view in CRM includes:`, options: [`a) Only transaction history`, `b) All touchpoints across departments`, `c) Social media only`, `d) Financial data only`], correct: ['b'], points: 0.2, explanation: `360-degree view = integrating ALL customer touchpoints (sales, service, marketing, support, social) into unified profile. Requires CRM+ERP integration (Digital Core).`},
+            {id: 76, type: 'tf', question: `Customer Lifetime Value (CLV) predicts the total revenue a customer will generate.`, correct: ['a'], points: 0.2, explanation: `CLV (Customer Lifetime Value) = predicted total revenue from a customer relationship. Guides acquisition spending (don't spend more than CLV to acquire!). CRM aims to maximize CLV.`},
+            {id: 77, type: 'dropdown', question: `The CHRO is associated with the System of _____.`, options: [`Meritocracy`, `Control`, `Visibility`, `Experience`], correct: ['Meritocracy'], points: 0.2, explanation: `⚠️ EXAM TRAP: CHRO = System of MERITOCRACY (talent, performance, compensation, succession). HR/HCM manages the 'Hire to Retire' (H2R) process, separate from CRM.`},
+            {id: 78, type: 'mc', question: `Which metric measures the percentage of customers who stop using a service?`, options: [`a) Churn rate`, `b) Conversion rate`, `c) Net Promoter Score`, `d) Click-through rate`], correct: ['a'], points: 0.2, explanation: `Churn rate = % customers who stop using service in a period. Critical SaaS/subscription metric. Reducing churn by 5% can increase profits 25-95%! CRM systems predict and prevent churn.`},
+            {id: 79, type: 'tf', question: `Social CRM integrates social media interactions with traditional CRM data.`, correct: ['a'], points: 0.2, explanation: `Social CRM integrates social media monitoring and engagement with traditional CRM data. Allows sentiment analysis and social customer service. Combines 3rd Platform 'Social' with CRM.`},
+            {id: 80, type: 'multi', question: `Collaborative CRM enables:`, options: [`a) Sharing customer info across departments`, `b) Integration with partners/suppliers`, `c) Multi-channel communication`, `d) Automated production`, `e) All except automated production`], correct: ['a', 'b', 'c'], points: 0.2, explanation: `Collaborative CRM shares customer data across departments (sales, service, marketing) and with partners for unified service. Breaks down silos—matches the Magic Hexagon integration concept!`},
+            {id: 81, type: 'mc', question: `Marketing Automation in CRM handles:`, options: [`a) Payroll processing`, `b) Campaign management and lead nurturing`, `c) Inventory tracking`, `d) Financial reporting`], correct: ['b'], points: 0.2, explanation: `Marketing Automation = campaign management, email marketing, lead scoring, nurturing workflows. Part of Operational CRM. Enables the 'Contact to Lead' phase of L2C process.`},
+            {id: 82, type: 'tf', question: `Service Automation includes help desk, field service, and call center management.`, correct: ['a'], points: 0.2, explanation: `Service Automation = help desk, field service, call center management. Omnichannel support (phone, email, chat, social). Critical for Customer Experience and NPS scores.`},
+            {id: 83, type: 'mc', question: `Net Promoter Score (NPS) measures:`, options: [`a) Website traffic`, `b) Customer loyalty and satisfaction`, `c) Sales conversion`, `d) Product defects`], correct: ['b'], points: 0.2, explanation: `NPS (Net Promoter Score) = 'How likely are you to recommend us?' on 0-10 scale. Promoters (9-10) - Detractors (0-6) = NPS. CX Leaders achieve +15-25 NPS points improvement.`},
+            {id: 84, type: 'tf', question: `CRM can be deployed as SaaS (cloud) or on-premise software.`, correct: ['a'], points: 0.2, explanation: `CRM deployment: SaaS (Salesforce, cloud-native), On-premise (traditional), Hybrid. Cloud CRM enables faster deployment and mobile access—key for field sales/service.`},
+            {id: 85, type: 'multi', question: `Leading CRM vendors include:`, options: [`a) Salesforce`, `b) Microsoft Dynamics`, `c) SAP`, `d) Oracle`, `e) All of the above`], correct: ['e'], points: 0.2, explanation: `Leading CRM vendors: Salesforce (market leader, cloud-native), Microsoft Dynamics (integration with Office), SAP (integration with ERP), Oracle (enterprise focus).`},
+            {id: 86, type: 'dropdown', question: `Lead scoring in CRM ranks prospects by their _____ to purchase.`, options: [`Likelihood`, `Age`, `Location`, `Gender`], correct: ['Likelihood'], points: 0.2, explanation: `Lead scoring ranks prospects by LIKELIHOOD to purchase using demographic (title, company) and behavioral (website visits, email opens) data. Automated by Marketing Automation (Operational CRM).`},
+            {id: 87, type: 'mc', question: `What is 'campaign management' in CRM?`, options: [`a) Military operations`, `b) Planning, executing, and analyzing marketing campaigns`, `c) Project management`, `d) HR recruitment`], correct: ['b'], points: 0.2, explanation: `Campaign management = planning, executing, tracking, analyzing marketing campaigns across channels. Includes A/B testing, attribution, ROI analysis. CMO's key tool.`},
+            {id: 88, type: 'tf', question: `Mobile CRM allows sales reps to access customer data from smartphones and tablets.`, correct: ['a'], points: 0.2, explanation: `Mobile CRM enables field sales reps to access customer data, update opportunities, and check inventory on smartphones/tablets. Essential for B2B sales effectiveness.`},
+            {id: 89, type: 'multi', question: `AI in CRM enables:`, options: [`a) Predictive lead scoring`, `b) Chatbots`, `c) Sentiment analysis`, `d) Next-best-action recommendations`, `e) All of the above`], correct: ['e'], points: 0.2, explanation: `AI in CRM = Predictive lead scoring, Chatbots (service automation), Sentiment analysis (social), Next-best-action recommendations (sales). Drives the 307% ROI for SAP Commerce Cloud B2B!`},
+            {id: 90, type: 'mc', question: `A 'warm lead' in CRM terminology is:`, options: [`a) A customer who complains frequently`, `b) A prospect who has shown interest but hasn't purchased`, `c) A long-term loyal customer`, `d) An employee referral`], correct: ['b'], points: 0.2, explanation: `Warm lead = prospect who has shown interest (downloaded content, attended webinar) but hasn't purchased yet. Lead nurturing moves them through L2C process to Opportunity.`},
+            {id: 91, type: 'tf', question: `SCM stands for Supply Chain Management.`, correct: ['a'], points: 0.2, explanation: `SCM = Supply Chain Management. Manages flow of goods, data, finances from raw materials to customer delivery. COO's domain = System of Visibility per stakeholder mapping.`},
+            {id: 92, type: 'tf', question: `The bullwhip effect describes increasing demand variability as you move upstream in the supply chain.`, correct: ['a'], points: 0.2, explanation: `Bullwhip effect = small demand changes at retail cause amplified fluctuations upstream (distributor, manufacturer). SCM systems (ERP) reduce this via information sharing and VMI.`},
+            {id: 93, type: 'mc', question: `Which supply chain strategy maintains minimal inventory and produces based on actual demand?`, options: [`a) Make-to-Stock (MTS)`, `b) Make-to-Order (MTO)`, `c) Engineer-to-Order (ETO)`, `d) Assemble-to-Order (ATO)`], correct: ['b'], points: 0.2, explanation: `Make-to-Order (MTO) = produce after order received. Minimizes inventory but increases lead time. Contrast with Make-to-Stock (MTS—produce for inventory) and Engineer-to-Order (ETO—custom design).`},
+            {id: 94, type: 'multi', question: `e-Procurement benefits include:`, options: [`a) Lower transaction costs`, `b) Faster purchase cycles`, `c) Better spend visibility`, `d) Increased maverick spending`, `e) Improved supplier management`], correct: ['a', 'b', 'c', 'e'], points: 0.2, explanation: `e-Procurement benefits: Lower costs (automation), Faster cycles (approval workflows), Better visibility (spend analysis), Reduced maverick spending (off-contract buying). Drives Operational Excellence!`},
+            {id: 95, type: 'dropdown', question: `The procurement process follows: Purchase Requisition → _____ → Goods Receipt → Invoice Verification → Payment.`, options: [`Purchase Order`, `Production Order`, `Sales Order`, `Work Order`], correct: ['Purchase Order'], points: 0.2, explanation: `Procure-to-Pay (P2P) = Requisition → Purchase Order → Goods Receipt → Invoice Verification → Payment. 3-way matching (PO+GR+Invoice) prevents fraud and ensures accuracy.`},
+            {id: 96, type: 'tf', question: `Just-in-Time (JIT) inventory minimizes holding costs by receiving goods only as needed.`, correct: ['a'], points: 0.2, explanation: `Just-in-Time (JIT) = inventory arrives exactly when needed for production. Minimizes holding costs but requires reliable suppliers (SCM risk!). Toyota Production System principle.`},
+            {id: 97, type: 'mc', question: `What is 'vendor managed inventory' (VMI)?`, options: [`a) Customer manages supplier stock`, `b) Supplier manages customer inventory levels`, `c) Automated warehouse robots`, `d) Government-controlled inventory`], correct: ['b'], points: 0.2, explanation: `VMI (Vendor Managed Inventory) = supplier monitors customer's inventory and replenishes automatically. Reduces stockouts and inventory costs. Requires integration (EDI/API) between ERP systems.`},
+            {id: 98, type: 'tf', question: `3-way matching in procurement matches Purchase Order, Goods Receipt, and Invoice.`, correct: ['a'], points: 0.2, explanation: `3-way matching = verify Purchase Order (what was ordered) + Goods Receipt (what was received) + Invoice (what was billed) all match before payment. Key internal control (CFO/System of Control).`},
+            {id: 99, type: 'multi', question: `Supply chain risks include:`, options: [`a) Supplier bankruptcy`, `b) Natural disasters`, `c) Political instability`, `d) Cyber attacks`, `e) All of the above`], correct: ['e'], points: 0.2, explanation: `Supply chain risks: Supplier bankruptcy (financial), Natural disasters (operational), Political instability (geopolitical), Cyber attacks (security). Requires risk management and business continuity planning.`},
+            {id: 100, type: 'mc', question: `What does 'drop shipping' mean in e-commerce?`, options: [`a) Shipping by air`, `b) Retailer ships from own warehouse`, `c) Supplier ships directly to customer`, `d) International shipping only`], correct: ['c'], points: 0.2, explanation: `Drop shipping = retailer takes orders but supplier ships directly to customer. Reduces retailer inventory costs but reduces margin (supplier takes fulfillment cost). Common in e-Commerce.`},
+            {id: 101, type: 'tf', question: `Cross-docking moves goods directly from receiving to shipping with minimal storage.`, correct: ['a'], points: 0.2, explanation: `Cross-docking = move goods directly from receiving to shipping dock with minimal warehouse storage. Reduces handling costs and lead times. Requires precise coordination (WMS/TMS).`},
+            {id: 102, type: 'dropdown', question: `The _____ Plan → Source → Make → Deliver → Return model describes supply chain processes.`, options: [`SCOR`, `SAP`, `SCM`, `SRM`], correct: ['SCOR'], points: 0.2, explanation: `SCOR (Supply Chain Operations Reference) model = Plan → Source → Make → Deliver → Return. Standard framework for SCM processes. Used in SAP IBP (Integrated Business Planning).`},
+            {id: 103, type: 'mc', question: `Which has the highest degree of customer influence on production?`, options: [`a) Make-to-Stock`, `b) Assemble-to-Order`, `c) Make-to-Order`, `d) Engineer-to-Order`], correct: ['d'], points: 0.2, explanation: `ETO (Engineer-to-Order) has highest customer influence—products designed from scratch per customer specs. Longest lead times, highest margins. Common in industrial equipment/construction.`},
+            {id: 104, type: 'tf', question: `SRM (Supplier Relationship Management) manages interactions with vendors and procurement.`, correct: ['a'], points: 0.2, explanation: `SRM (Supplier Relationship Management) = managing vendor relationships, performance scorecards, contracts, and strategic sourcing. Extends ERP procurement capabilities externally.`},
+            {id: 105, type: 'multi', question: `Logistics activities include:`, options: [`a) Transportation`, `b) Warehousing`, `c) Inventory management`, `d) Order fulfillment`, `e) All of the above`], correct: ['e'], points: 0.2, explanation: `Logistics = Transportation (moving goods), Warehousing (storing), Inventory management (tracking), Order fulfillment (picking/packing/shipping). Physical execution of SCM.`},
+            {id: 106, type: 'mc', question: `What is 'safety stock'?`, options: [`a) High-risk inventory`, `b) Buffer inventory for demand/supply uncertainty`, `c) Expired goods`, `d) Stolen inventory`], correct: ['b'], points: 0.2, explanation: `Safety stock = buffer inventory for demand/supply uncertainty. Balances stockout risk vs holding cost. Calculated using statistical formulas (service level × demand variability).`},
+            {id: 107, type: 'tf', question: `Last Mile Delivery is the final step delivering goods to the end customer.`, correct: ['a'], points: 0.2, explanation: `Last mile delivery = final leg from distribution center to customer's door. Most expensive part of delivery (up to 50% of total cost). Critical for e-Commerce customer satisfaction.`},
+            {id: 108, type: 'multi', question: `Reverse logistics handles:`, options: [`a) Returns`, `b) Recycling`, `c) Repairs`, `d) Disposal`, `e) All of the above`], correct: ['e'], points: 0.2, explanation: `Reverse logistics = returns, repairs, recycling, disposal. Increasingly important for sustainability (CSO concern) and circular economy. Requires separate processes from forward logistics.`},
+            {id: 109, type: 'mc', question: `What does 'EOQ' stand for in inventory management?`, options: [`a) Estimated Order Quantity`, `b) Economic Order Quantity`, `c) Electronic Order Quality`, `d) End of Quarter`], correct: ['b'], points: 0.2, explanation: `EOQ (Economic Order Quantity) = optimal order size minimizing total inventory costs (holding + ordering). Classic inventory management formula: √(2DS/H).`},
+            {id: 110, type: 'tf', question: `Blockchain can improve supply chain transparency and traceability.`, correct: ['a'], points: 0.2, explanation: `Blockchain in supply chain = immutable tracking from origin to consumer. Ensures authenticity (anti-counterfeiting), ethical sourcing, and automatic payments via smart contracts.`},
+            {id: 111, type: 'dropdown', question: `The CIO is associated with the System of _____.`, options: [`Engagement`, `Control`, `Visibility`, `Experience`], correct: ['Engagement'], points: 0.2, explanation: `⚠️ EXAM TRAP: CIO = System of ENGAGEMENT (digital platforms, user interfaces, digital workplace). Manages the IT infrastructure that enables all other systems.`},
+            {id: 112, type: 'mc', question: `What is 'omnichannel fulfillment'?`, options: [`a) Using only one channel`, `b) Integrating inventory across online and offline channels`, `c) International shipping only`, `d) Wholesale distribution`], correct: ['b'], points: 0.2, explanation: `Omnichannel fulfillment = unified inventory across online/offline enabling 'buy online pickup in store' (BOPIS), 'ship from store', endless aisle. Requires real-time ERP inventory visibility.`},
+            {id: 113, type: 'tf', question: `Demand forecasting uses historical data and analytics to predict future demand.`, correct: ['a'], points: 0.2, explanation: `Demand forecasting uses historical data, seasonality, trends, and external factors to predict future demand. Critical for inventory optimization and production planning (IBP).`},
+            {id: 114, type: 'multi', question: `Key supply chain KPIs include:`, options: [`a) Perfect Order Rate`, `b) Inventory Turnover`, `c) Cash-to-Cash Cycle`, `d) Fill Rate`, `e) All of the above`], correct: ['e'], points: 0.2, explanation: `SCM KPIs: Perfect Order Rate (accuracy), Inventory Turnover (efficiency), Cash-to-Cash Cycle (working capital), Fill Rate (service level). All drive Operational Excellence metrics!`},
+            {id: 115, type: 'mc', question: `What is a 'strategic supplier'?`, options: [`a) Cheapest vendor`, `b) Long-term partner critical to business`, `c) One-time purchase`, `d) Local vendor only`], correct: ['b'], points: 0.2, explanation: `Strategic supplier = long-term partner critical to business (not just cheapest). Managed via SRM with joint planning, investment, and risk sharing. Often 20% of suppliers = 80% of spend (Pareto).`},
+            {id: 116, type: 'tf', question: `SAP Activate Methodology consists of 6 phases: Discover, Prepare, Explore, Realize, Deploy, Run.`, correct: ['a'], points: 0.2, explanation: `SAP Activate has 6 phases: Discover, Prepare, Explore, Realize, Deploy, RUN (not 5 phases!). Run is the 6th phase for continuous operations. Week 18 (Solution Design in Explore) is the HIGHEST RISK milestone!`},
+            {id: 117, type: 'tf', question: `SAP S/4HANA can only be deployed on-premise.`, correct: ['b'], points: 0.2, explanation: `S/4HANA can be deployed Public Cloud (ESS/MSS), Private Cloud (HEC), On-premise, or Hybrid. Flexibility is key—not 'cloud-only'!`},
+            {id: 118, type: 'mc', question: `What is the typical payback period for SAP Commerce Cloud?`, options: [`a) 6-9 months`, `b) 12-18 months`, `c) 24-36 months`, `d) 5 years`], correct: ['b'], points: 0.2, explanation: `SAP Commerce Cloud payback period = 12-18 months (standard for SAP investments). 3-year ROI = 307% for B2B specifically. These are standard exam numbers!`},
+            {id: 119, type: 'multi', question: `SAP Activate phases include:`, options: [`a) Discover`, `b) Prepare`, `c) Explore`, `d) Realize`, `e) Deploy`, `f) Run`], correct: ['a', 'b', 'c', 'd', 'e', 'f'], points: 0.2, explanation: `All 6 SAP Activate phases: Discover, Prepare, Explore, Realize, Deploy, Run. Memorize the order and the key milestone in each (especially Week 18 Solution Design as highest risk).`},
+            {id: 120, type: 'dropdown', question: `SAP Fiori provides a modern _____ experience for SAP applications.`, options: [`User`, `Database`, `Network`, `Security`], correct: ['User'], points: 0.2, explanation: `SAP Fiori = modern user experience layer for S/4HANA. Role-based, responsive (mobile-friendly), simple UX. Replaces the old SAPGUI transaction codes with intuitive apps.`},
+            {id: 121, type: 'tf', question: `SAP HANA is an in-memory database that enables real-time analytics.`, correct: ['a'], points: 0.2, explanation: `SAP HANA = in-memory columnar database enabling real-time analytics and transactions on same data. Eliminates batch processing delays. Requires specific hardware/infrastructure.`},
+            {id: 122, type: 'mc', question: `What does 'Clean Core' mean in SAP S/4HANA?`, options: [`a) No customization allowed`, `b) Minimal custom code, using standard functionality`, `c) Only cloud deployment`, `d) Free software`], correct: ['b'], points: 0.2, explanation: `Clean Core = keep S/4HANA close to standard SAP functionality, avoid modifications. Extend via side-by-side extensions on SAP BTP (Business Technology Platform). Enables easier upgrades!`},
+            {id: 123, type: 'tf', question: `SAP Business Technology Platform (BTP) enables application development and integration.`, correct: ['a'], points: 0.2, explanation: `SAP BTP (Business Technology Platform) = PaaS for extension, integration, analytics, and AI. Enables Clean Core strategy by moving customizations off the main ERP.`},
+            {id: 124, type: 'multi', question: `SAP S/4HANA benefits include:`, options: [`a) Real-time analytics`, `b) Simplified data model`, `c) Improved user experience`, `d) Cloud-ready architecture`, `e) All of the above`], correct: ['e'], points: 0.2, explanation: `S/4HANA benefits: Real-time analytics (HANA), Simplified data model (one table vs aggregates), Improved UX (Fiori), Cloud-ready architecture. All drive the 250-350% ROI!`},
+            {id: 125, type: 'mc', question: `What is SAP Fiori Elements?`, options: [`a) A periodic table app`, `b) Predefined templates for common app patterns`, `c) A chemical company`, `d) A database element`], correct: ['b'], points: 0.2, explanation: `Fiori Elements = predefined templates for common app patterns (List Report, Object Page, Overview Page). Enables rapid development with consistent UX. Low-code approach.`},
+            {id: 126, type: 'tf', question: `SAP RISE is a business transformation-as-a-service offering.`, correct: ['a'], points: 0.2, explanation: `RISE with SAP = business transformation-as-a-service subscription bundle. Includes S/4HANA Cloud, BTP credits, and transformation services. Simplifies procurement and implementation.`},
+            {id: 127, type: 'dropdown', question: `The transition from SAP ECC to S/4HANA is called a _____.`, options: [`Conversion`, `Upgrade`, `Migration`, `All terms used`], correct: ['All terms used'], points: 0.2, explanation: `ECC to S/4HANA transition called conversion (technical), migration (business), or upgrade (general). Greenfield (new implementation), Brownfield (system conversion), or Selective (hybrid).`},
+            {id: 128, type: 'mc', question: `What is the 'side-by-side extension' approach?`, options: [`a) Modifying core SAP code`, `b) Building extensions on BTP without touching core`, `c) Parallel SAP systems`, `d) A type of monitor setup`], correct: ['b'], points: 0.2, explanation: `Side-by-side extension = build custom apps on BTP that call S/4HANA APIs. Keeps core 'clean' while enabling customization. Modern alternative to modifying core ERP code.`},
+            {id: 129, type: 'tf', question: `SAP Fiori apps are responsive and work on mobile devices.`, correct: ['a'], points: 0.2, explanation: `Fiori apps are responsive by design—work on desktop, tablet, mobile automatically. Uses SAPUI5 framework (HTML5-based). Essential for modern user adoption.`},
+            {id: 130, type: 'multi', question: `SAP implementation challenges include:`, options: [`a) Data migration complexity`, `b) Change management`, `c) Integration with legacy systems`, `d) User training`, `e) All of the above`], correct: ['e'], points: 0.2, explanation: `SAP implementation challenges: Data migration (cleansing, mapping), Change management (user adoption), Integration (APIs), User training. These are why SAP Activate methodology is critical!`},
+            {id: 131, type: 'mc', question: `What does 'SAPGUI' stand for?`, options: [`a) SAP Graphical User Interface`, `b) SAP Global Utility`, `c) SAP General Upgrade`, `d) SAP Government Use`], correct: ['a'], points: 0.2, explanation: `SAPGUI = old Windows client for ECC (transaction codes like ME21N, VA01). Fiori is the modern replacement. Many users still prefer GUI for power-user efficiency, though.`},
+            {id: 132, type: 'tf', question: `SAP Central Finance allows consolidation of multiple ERP systems into S/4HANA.`, correct: ['a'], points: 0.2, explanation: `Central Finance = replicate financial postings from multiple ERPs into central S/4HANA. Enables consolidation without replacing source systems immediately. Common in M&A scenarios.`},
+            {id: 133, type: 'multi', question: `SAP BTP services include:`, options: [`a) Integration Suite`, `b) Extension Suite`, `c) Data and Analytics`, `d) AI/ML services`, `e) All of the above`], correct: ['e'], points: 0.2, explanation: `BTP services: Integration Suite (APIs, events), Extension Suite (Kyma, Cloud Foundry), Datasphere (analytics), AI/ML services (Business AI). Unified platform for innovation.`},
+            {id: 134, type: 'mc', question: `What is SAP Build?`, options: [`a) A construction module`, `b) Low-code/no-code application development`, `c) A manufacturing process`, `d) A warehouse robot`], correct: ['b'], points: 0.2, explanation: `SAP Build = low-code/no-code tools (Build Apps, Build Process Automation, Build Work Zone). Enables citizen developers to extend SAP without ABAP coding.`},
+            {id: 135, type: 'tf', question: `Greenfield implementation starts fresh without migrating historical data.`, correct: ['a'], points: 0.2, explanation: `Greenfield implementation = new S/4HANA instance, migrate only balances/open items (not full history). Fresh start, best practices, but loses historical transaction detail.`},
+            {id: 136, type: 'dropdown', question: `Brownfield implementation involves _____ an existing SAP system.`, options: [`Upgrading`, `Replacing`, `Deleting`, `Selling`], correct: ['Upgrading'], points: 0.2, explanation: `Brownfield implementation = upgrade existing SAP ECC to S/4HANA preserving customizations and history. Faster but carries forward technical debt. Uses SUM (Software Update Manager).`},
+            {id: 137, type: 'mc', question: `What is 'Selective Data Transition'?`, options: [`a) Moving all data`, `b) Migrating specific data and processes to S/4HANA`, `c) Deleting old data`, `d) Backup strategy`], correct: ['b'], points: 0.2, explanation: `Selective Data Transition = migrate specific data/processes to S/4HANA. Combines greenfield benefits (clean slate) with history preservation. Uses SAP tools like SDT.`},
+            {id: 138, type: 'tf', question: `SAP Best Practices are pre-configured content to accelerate implementation.`, correct: ['a'], points: 0.2, explanation: `SAP Best Practices = pre-configured processes, templates, and documentation. Accelerate implementation via Fit-to-Standard workshops. Starting point for SAP Activate.`},
+            {id: 139, type: 'multi', question: `SAP S/4HANA deployment options include:`, options: [`a) Public Cloud`, `b) Private Cloud`, `c) On-premise`, `d) Hybrid`, `e) All of the above`], correct: ['e'], points: 0.2, explanation: `S/4HANA deployment: Public Cloud (multi-tenant, standardized), Private Cloud (single-tenant, flexible), On-premise (full control), Hybrid (mixed). Match to customer needs!`},
+            {id: 140, type: 'mc', question: `What is the purpose of SAP Readiness Check?`, options: [`a) Employee health screening`, `b) Analyze system readiness for S/4HANA conversion`, `c) Security audit`, `d) Network speed test`], correct: ['b'], points: 0.2, explanation: `Readiness Check = free tool analyzing ECC system for S/4HANA conversion complexity. Checks custom code, data volume, business functions. Run before starting project!`},
+            {id: 141, type: 'tf', question: `SAP Commerce Cloud (formerly Hybris) is an enterprise e-commerce platform.`, correct: ['a'], points: 0.2, explanation: `SAP Commerce Cloud (formerly Hybris) = enterprise e-commerce platform for B2B and B2C. Includes PIM (Product Info Management), CMS, and order management. 307% 3-year ROI for B2B!`},
+            {id: 142, type: 'tf', question: `B2B e-commerce typically has smaller average order values than B2C.`, correct: ['b'], points: 0.2, explanation: `⚠️ EXAM TRAP: B2B has HIGHER average order values (bulk orders) but LOWER frequency than B2C. B2C = frequent small purchases, emotional/impulse driven.`},
+            {id: 143, type: 'mc', question: `What is a 'product information management' (PIM) system?`, options: [`a) Inventory management`, `b) Centralized product data management for all channels`, `c) Price comparison tool`, `d) Shipping tracker`], correct: ['b'], points: 0.2, explanation: `PIM (Product Information Management) = centralizes product data (descriptions, specs, images, pricing) for consistent publishing across channels (web, mobile, print, POS).`},
+            {id: 144, type: 'multi', question: `Key e-commerce platform features include:`, options: [`a) Catalog management`, `b) Shopping cart`, `c) Payment gateway integration`, `d) Order management`, `e) All of the above`], correct: ['e'], points: 0.2, explanation: `Core e-commerce features: Catalog management (products/categories), Shopping cart (basket), Payment gateway (processing), Order management (fulfillment). All integrated via Digital Core.`},
+            {id: 145, type: 'dropdown', question: `The _____ rate measures how many visitors add items to cart.`, options: [`Add-to-Cart`, `Conversion`, `Bounce`, `Churn`], correct: ['Add-to-Cart'], points: 0.2, explanation: `Add-to-Cart rate = % of visitors who add at least one item to cart. Key funnel metric between browsing and checkout. Optimization via product recommendations and merchandising.`},
+            {id: 146, type: 'tf', question: `Cart abandonment occurs when users add items but don't complete purchase.`, correct: ['a'], points: 0.2, explanation: `Cart abandonment = adding items but leaving without purchase. Average ~70% in e-commerce! Reduce via free shipping, guest checkout, trust badges, multiple payment options.`},
+            {id: 147, type: 'mc', question: `Which is NOT a major e-commerce platform?`, options: [`a) Shopify`, `b) Magento`, `c) Salesforce Commerce Cloud`, `d) Microsoft Word`], correct: ['d'], points: 0.2, explanation: `Major e-commerce platforms: Shopify (SMB), Magento (Adobe Commerce - mid-market), Salesforce Commerce Cloud (enterprise), SAP Commerce Cloud (enterprise B2B). Microsoft Word is NOT e-commerce!`},
+            {id: 148, type: 'tf', question: ` Progressive Web Apps (PWA) provide app-like experiences in browsers.`, correct: ['a'], points: 0.2, explanation: `PWA (Progressive Web App) = web app with app-like features (offline, push notifications, home screen icon). No app store needed. Cost-effective mobile strategy for e-commerce.`},
+            {id: 149, type: 'multi', question: `Payment gateway options include:`, options: [`a) PayPal`, `b) Stripe`, `c) Adyen`, `d) Square`, `e) All of the above`], correct: ['e'], points: 0.2, explanation: `Payment gateways: PayPal (wallet), Stripe (developer-friendly), Adyen (global/omnichannel), Square (POS integration). All integrate with SAP Commerce Cloud via APIs.`},
+            {id: 150, type: 'mc', question: `What is 'dynamic pricing' in e-commerce?`, options: [`a) Fixed prices`, `b) Prices that change based on demand, inventory, or customer segment`, `c) Wholesale pricing only`, `d) Manual price updates`], correct: ['b'], points: 0.2, explanation: `Dynamic pricing = algorithmic price changes based on demand, inventory, competition, customer segment. Airlines and Amazon use this. Requires real-time analytics (HANA).`},
+            {id: 151, type: 'tf', question: `A/B testing compares two versions of a webpage to see which performs better.`, correct: ['a'], points: 0.2, explanation: `A/B testing = compare two versions of webpage/app to see which performs better (conversion, engagement). Data-driven optimization methodology. Statistical significance required!`},
+            {id: 152, type: 'dropdown', question: `The _____ funnel describes Awareness → Interest → Desire → Action.`, options: [`AIDA`, `SAP`, `ERP`, `CRM`], correct: ['AIDA'], points: 0.2, explanation: `AIDA funnel = Attention (awareness) → Interest (consideration) → Desire (preference) → Action (purchase). Classic marketing model mapped to customer journey stages.`},
+            {id: 153, type: 'mc', question: `What is 'guest checkout' in e-commerce?`, options: [`a) VIP customer access`, `b) Purchase without creating an account`, `c) Physical store pickup`, `d) Wholesale ordering`], correct: ['b'], points: 0.2, explanation: `Guest checkout = purchase without account creation. Reduces friction (especially mobile) but loses customer data capture. Trade-off between conversion and CRM data.`},
+            {id: 154, type: 'tf', question: `Subscription commerce involves recurring billing for regular product delivery.`, correct: ['a'], points: 0.2, explanation: `Subscription commerce = recurring billing for regular delivery (Amazon Subscribe & Save, Dollar Shave Club). Predictable revenue, higher CLV, but requires different fulfillment (ASC).`},
+            {id: 155, type: 'multi', question: `Factors reducing cart abandonment include:`, options: [`a) Free shipping`, `b) Guest checkout`, `c) Multiple payment options`, `d) Trust badges`, `e) All of the above`], correct: ['e'], points: 0.2, explanation: `Cart abandonment solutions: Free shipping (biggest factor), Guest checkout (reduce friction), Multiple payments (options), Trust badges (security signals), Exit-intent offers (last chance).`},
+            {id: 156, type: 'mc', question: `What does 'API-first commerce' mean?`, options: [`a) Building frontend first`, `b) APIs are the foundation, enabling multiple frontends`, `c) Only B2B commerce`, `d) Phone-based ordering`], correct: ['b'], points: 0.2, explanation: `API-first commerce = backend commerce APIs built first, frontends (web, mobile, IoT, voice) consume them. Enables headless architecture and omnichannel flexibility.`},
+            {id: 157, type: 'tf', question: `Site search is critical in e-commerce as search users convert 2-3x higher.`, correct: ['a'], points: 0.2, explanation: `Site search is critical—users who search convert 2-3x higher than browsers. Requires good search relevance, filters, autosuggest, and merchandising controls.`},
+            {id: 158, type: 'multi', question: `E-commerce personalization techniques include:`, options: [`a) Product recommendations`, `b) Dynamic content`, `c) Personalized emails`, `d) Targeted promotions`, `e) All of the above`], correct: ['e'], points: 0.2, explanation: `Personalization techniques: Product recommendations (collaborative filtering), Dynamic content (banners/offers), Personalized emails (segmentation), Targeted promotions (behavioral).`},
+            {id: 159, type: 'mc', question: `What is 'headless checkout'?`, options: [`a) Checkout without a head`, `b) Checkout experience decoupled from the storefront`, `c) In-person payment`, `d) Phone ordering`], correct: ['b'], points: 0.2, explanation: `Headless checkout = checkout experience separate from storefront via APIs. Enables embedded commerce (buy in Instagram), custom checkout flows, and A/B testing.`},
+            {id: 160, type: 'tf', question: `Social proof (reviews, ratings) increases conversion rates in e-commerce.`, correct: ['a'], points: 0.2, explanation: `Social proof = reviews, ratings, testimonials, UGC (user-generated content). Increases trust and conversion—products with reviews convert significantly better than without.`},
+            {id: 161, type: 'dropdown', question: `The _____ metric shows revenue per visitor.`, options: [`RPV`, `CTR`, `NPS`, `SEO`], correct: ['RPV'], points: 0.2, explanation: `RPV (Revenue Per Visitor) = total revenue ÷ total visitors. Shows monetization efficiency. Can be improved via conversion rate increase or AOV (Average Order Value) increase.`},
+            {id: 162, type: 'mc', question: `What is 'unified commerce'?`, options: [`a) Single-channel retail`, `b) Real-time inventory visibility across all channels`, `c) Only online sales`, `d) Franchise model`], correct: ['b'], points: 0.2, explanation: `Unified commerce = single platform with real-time inventory, customer, and order data across all touchpoints. Beyond omnichannel—truly unified backend (SAP Commerce + S/4HANA).`},
+            {id: 163, type: 'tf', question: `Live chat and chatbots improve e-commerce customer service and conversion.`, correct: ['a'], points: 0.2, explanation: `Live chat/chatbots improve service and conversion by answering questions in real-time. AI chatbots (SAP Conversational AI) handle routine queries; humans handle complex issues.`},
+            {id: 164, type: 'multi', question: `Marketplace business models include:`, options: [`a) B2C (Amazon)`, `b) C2C (eBay)`, `c) B2B (Alibaba)`, `d) Service (Uber)`, `e) All of the above`], correct: ['e'], points: 0.2, explanation: `Marketplace models: B2C (Amazon), C2C (eBay), B2B (Alibaba), Service (Uber, Airbnb). Platform business model connecting buyers and sellers. Network effects drive value.`},
+            {id: 165, type: 'mc', question: `What does 'checkout optimization' focus on?`, options: [`a) Making checkout longer`, `b) Reducing steps and friction to complete purchase`, `c) Adding more form fields`, `d) Removing payment options`], correct: ['b'], points: 0.2, explanation: `Checkout optimization = reduce steps, autofill address, guest checkout, progress indicators, multiple payment options, security badges. Goal: minimize abandonment at final step.`},
+            {id: 166, type: 'tf', question: `The Lead to Cash (L2C) process ends with Order to Cash.`, correct: ['a'], points: 0.2, explanation: `L2C (Lead to Cash) includes O2C (Order to Cash) as the final phase. L2C starts earlier with Contact→Lead→Opportunity→Quote→Order→Cash. O2C starts at Order.`},
+            {id: 167, type: 'tf', question: `Hire to Retire (H2R) is the HR process covering the complete employee lifecycle.`, correct: ['a'], points: 0.2, explanation: `H2R (Hire to Retire) = full employee lifecycle: Recruit → Onboard → Develop → Compensate → Offboard. CHRO/System of Meritocracy process enabled by HCM (Human Capital Management).`},
+            {id: 168, type: 'mc', question: `What is the correct sequence of Lead to Cash?`, options: [`a) Quote → Order → Lead → Cash`, `b) Lead → Opportunity → Quote → Order → Cash`, `c) Cash → Order → Lead`, `d) Opportunity → Lead → Quote`], correct: ['b'], points: 0.2, explanation: `L2C sequence: Contact → Lead → Opportunity → Quote → Order → Cash. Don't confuse the order! This is the end-to-end sales process from marketing to revenue recognition.`},
+            {id: 169, type: 'multi', question: `Source to Pay (S2P) includes:`, options: [`a) Sourcing`, `b) Contracting`, `c) Purchasing`, `d) Payment`, `e) All of the above`], correct: ['e'], points: 0.2, explanation: `S2P (Source to Pay) = Sourcing (find suppliers) → Contracting (negotiate terms) → Purchasing (POs) → Payment (invoices). Procurement counterpart to L2C. CFO/COO process.`},
+            {id: 170, type: 'dropdown', question: `Design to Operate (D2O) covers the product _____ cycle.`, options: [`Lifecycle`, `Sales`, `Marketing`, `Financial`], correct: ['Lifecycle'], points: 0.2, explanation: `D2O (Design to Operate) = product lifecycle: Design → Plan → Manufacture → Deliver → Operate/Maintenance. Engineering and manufacturing process. COO/System of Visibility domain.`},
+            {id: 171, type: 'tf', question: `Record to Report (R2R) is the finance process closing books and reporting results.`, correct: ['a'], points: 0.2, explanation: `R2R (Record to Report) = accounting close process: Transactions → Reconciliation → Adjustments → Financial Statements. CFO/System of Control core process. Monthly/quarterly/annual close.`},
+            {id: 172, type: 'mc', question: `Which process is NOT part of standard SAP S/4HANA?`, options: [`a) Lead to Cash`, `b) Hire to Retire`, `c) Design to Operate`, `d) Sleep to Dream`], correct: ['d'], points: 0.2, explanation: `⚠️ EXAM TRAP: 'Sleep to Dream' is NOT a real process! Real processes: L2C, H2R, S2P, D2O, R2P. Know these acronyms and what they cover.`},
+            {id: 173, type: 'tf', question: `Application integration ensures different systems share data and work together.`, correct: ['a'], points: 0.2, explanation: `Application integration = connecting disparate systems (ERP, CRM, e-commerce) so data flows seamlessly. Enables the Magic Hexagon and 360-degree customer view. APIs are key!`},
+            {id: 174, type: 'multi', question: `Integration patterns include:`, options: [`a) Point-to-point`, `b) Hub-and-spoke`, `c) Bus architecture`, `d) API-led`, `e) All of the above`], correct: ['e'], points: 0.2, explanation: `Integration patterns: Point-to-point (simple, 1:1), Hub-and-spoke (centralized), Bus architecture (ESB), API-led (modern, microservices). Trade-offs in complexity vs flexibility.`},
+            {id: 175, type: 'mc', question: `What is iPaaS?`, options: [`a) In-house Platform as a Service`, `b) Integration Platform as a Service`, `c) Internet Platform as a Service`, `d) Internal Process as a Service`], correct: ['b'], points: 0.2, explanation: `iPaaS (Integration Platform as a Service) = cloud-based integration (MuleSoft, Dell Boomi, SAP Integration Suite). Connects cloud and on-premise apps without on-premise middleware.`},
+            {id: 176, type: 'tf', question: `ETL stands for Extract, Transform, Load - used for data integration.`, correct: ['a'], points: 0.2, explanation: `ETL (Extract, Transform, Load) = batch data integration for data warehousing. Extract from source, Transform (clean/map), Load to target. Contrast with real-time APIs.`},
+            {id: 177, type: 'dropdown', question: `_____ provides real-time integration vs batch processing.`, options: [`API integration`, `ETL`, `File transfer`, `Manual entry`], correct: ['API integration'], points: 0.2, explanation: `API integration = real-time synchronous calls between systems. ETL = batch/asynchronous. APIs for operational transactions, ETL for analytical bulk loads.`},
+            {id: 178, type: 'mc', question: `What is 'data mapping' in integration?`, options: [`a) GPS navigation`, `b) Matching fields between different data formats`, `c) Chart creation`, `d) File deletion`], correct: ['b'], points: 0.2, explanation: `Data mapping = matching fields between systems (e.g., 'Customer_ID' in CRM = 'KUNNR' in SAP). Critical for integration projects. Tools handle transformations (date formats, code lists).`},
+            {id: 179, type: 'tf', question: `Middleware acts as a bridge between different applications and operating systems.`, correct: ['a'], points: 0.2, explanation: `Middleware = software layer between apps and OS enabling communication (message queuing, transaction management, security). Examples: IBM MQ, TIBCO, SAP PI/PO.`},
+            {id: 180, type: 'multi', question: `Benefits of application integration include:`, options: [`a) Eliminating data silos`, `b) Process automation`, `c) 360-degree view of customers`, `d) Real-time data access`, `e) All of the above`], correct: ['e'], points: 0.2, explanation: `Integration benefits: Eliminate silos (unified view), Process automation (workflow), 360-degree customer view (CRM+ERP), Real-time data (immediate visibility).`},
+            {id: 181, type: 'tf', question: `RPA (Robotic Process Automation) automates repetitive rule-based tasks using software bots.`, correct: ['a'], points: 0.2, explanation: `RPA (Robotic Process Automation) = software bots mimicking human UI interactions for repetitive tasks (data entry, invoice processing). Rules-based, not AI. Quick wins for automation.`},
+            {id: 182, type: 'tf', question: `Machine Learning is a subset of Artificial Intelligence that enables systems to learn from data.`, correct: ['a'], points: 0.2, explanation: `Machine Learning = AI subset using statistical techniques to enable systems to learn from data and improve without explicit programming. Enables predictive analytics.`},
+            {id: 183, type: 'mc', question: `What is 'predictive analytics'?`, options: [`a) Reporting past events`, `b) Using data to predict future outcomes`, `c) Real-time monitoring`, `d) Data storage`], correct: ['b'], points: 0.2, explanation: `Predictive analytics = using historical data and ML to forecast future outcomes (churn, demand, failures). Key capability of Intelligent ERP and Analytical CRM.`},
+            {id: 184, type: 'multi', question: `AI applications in e-Business include:`, options: [`a) Chatbots`, `b) Recommendation engines`, `c) Fraud detection`, `d) Demand forecasting`, `e) All of the above`], correct: ['e'], points: 0.2, explanation: `AI in e-Business: Chatbots (service automation), Recommendation engines (personalization), Fraud detection (security), Demand forecasting (SCM). Drives 307% ROI and 12-18 month payback!`},
+            {id: 185, type: 'dropdown', question: `_____ enables machines to understand and process human language.`, options: [`NLP`, `HTML`, `SQL`, `FTP`], correct: ['NLP'], points: 0.2, explanation: `NLP (Natural Language Processing) = AI enabling machines to understand human language. Powers chatbots, sentiment analysis, voice assistants. Part of SAP Business AI.`},
+            {id: 186, type: 'tf', question: `Computer vision enables machines to interpret and analyze visual information.`, correct: ['a'], points: 0.2, explanation: `Computer vision = AI interpreting visual information (images, video). Applications: Quality inspection (manufacturing), Facial recognition (security), Autonomous vehicles (logistics).`},
+            {id: 187, type: 'mc', question: `What is 'hyperautomation'?`, options: [`a) Manual processing`, `b) Combining RPA, AI, and ML to automate everything possible`, `c) Slow automation`, `d) Physical robots only`], correct: ['b'], points: 0.2, explanation: `Hyperautomation = combining RPA, AI, ML, and process mining to automate everything possible. Disciplined approach to identifying and vetting automation opportunities.`},
+            {id: 188, type: 'multi', question: `Digital twin technology is used for:`, options: [`a) Simulating physical assets digitally`, `b) Testing scenarios without risk`, `c) Predictive maintenance`, `d) Product design`, `e) All of the above`], correct: ['e'], points: 0.2, explanation: `Digital twin = virtual replica of physical asset (product, machine, building). Used for simulation, testing, predictive maintenance, and design optimization. IoT feeds data to twin.`},
+            {id: 189, type: 'tf', question: `5G technology enables faster IoT connectivity and real-time business applications.`, correct: ['a'], points: 0.2, explanation: `5G enables faster IoT connectivity, real-time applications, and edge computing. Low latency (1ms) critical for autonomous systems and industrial automation.`},
+            {id: 190, type: 'mc', question: `To pass this NOVA IMS e-Business course, you need a minimum of:`, options: [`a) 8.0 points`, `b) 9.0 points`, `c) 9.5 points`, `d) 10.0 points`], correct: ['c'], points: 0.2, explanation: `⚠️ EXAM INFO: You need 9.5 out of 20 to pass NOVA IMS e-Business course! This simulator helps you achieve that target with realistic practice questions.`},
+            {id: 191, type: 'mc', question: `What is 'process orchestration' in integration?`, options: [`a) Manual data entry`, `b) Coordinating multiple automated processes across systems`, `c) Physical inventory management`, `d) Employee scheduling`], correct: ['b'], points: 0.2, explanation: `Process orchestration = coordinating multiple automated processes across systems into end-to-end workflows (e.g., L2C across CRM, ERP, e-commerce). BPMN tools, workflow engines.`},
+            {id: 192, type: 'tf', question: `Master Data Management (MDM) ensures consistent shared data across the enterprise.`, correct: ['a'], points: 0.2, explanation: `MDM (Master Data Management) = ensures consistent shared master data (customers, products, vendors) across enterprise. Creates Golden Record. Critical for integration success.`},
+            {id: 193, type: 'multi', question: `Types of master data include:`, options: [`a) Customer`, `b) Product`, `c) Vendor/Supplier`, `d) Employee`, `e) All of the above`], correct: ['e'], points: 0.2, explanation: `Master data types: Customer (CRM), Product (PLM/PIM), Vendor (SRM), Employee (HCM), Chart of Accounts (ERP). Shared across systems, changes infrequently.`},
+            {id: 194, type: 'dropdown', question: `A _____ diagram shows how data flows between systems.`, options: [`Data Flow`, `Gantt`, `Pie Chart`, `Organizational`], correct: ['Data Flow'], points: 0.2, explanation: `Data Flow Diagram (DFD) = visualizes how information moves between processes, data stores, and external entities. Systems analysis tool for integration design.`},
+            {id: 195, type: 'mc', question: `What is the purpose of an Enterprise Service Bus (ESB)?`, options: [`a) Physical transportation`, `b) Middleware for service-oriented architecture integration`, `c) Network cabling`, `d) Employee shuttle`], correct: ['b'], points: 0.2, explanation: `ESB (Enterprise Service Bus) = middleware for service-oriented architecture. Routes messages between services, handles protocol translation, security, monitoring. Predecessor to API-led integration.`},
+            {id: 196, type: 'tf', question: `API management platforms handle API security, rate limiting, and analytics.`, correct: ['a'], points: 0.2, explanation: `API management platforms (Apigee, Azure API Management, SAP API Management) handle security (OAuth), rate limiting (throttling), analytics (monitoring), and versioning of APIs.`},
+            {id: 197, type: 'multi', question: `Challenges of legacy system integration include:`, options: [`a) Outdated technologies`, `b) Lack of documentation`, `c) Security vulnerabilities`, `d) Limited vendor support`, `e) All of the above`], correct: ['e'], points: 0.2, explanation: `Legacy system integration challenges: Outdated tech (COBOL, mainframes), Missing documentation, Security vulnerabilities, No vendor support. Requires careful assessment (SAP Readiness Check similar concept).`},
+            {id: 198, type: 'mc', question: `What is 'data federation'?`, options: [`a) Centralized data warehouse`, `b) Virtual integration accessing data where it lives without moving it`, `c) Manual data entry`, `d) Data deletion`], correct: ['b'], points: 0.2, explanation: `Data federation = virtual integration accessing data where it lives without moving it. Real-time view without ETL delays. Contrast with data consolidation (data warehouse).`},
+            {id: 199, type: 'tf', question: `Event-driven architecture reacts to business events in real-time.`, correct: ['a'], points: 0.2, explanation: `Event-driven architecture = reacting to business events asynchronously (order placed → inventory check → shipping scheduled). Enables loose coupling and scalability. Uses message brokers (Kafka).`},
+            {id: 200, type: 'mc', question: `What does 'loosely coupled' mean in system architecture?`, options: [`a) Systems are tightly bound`, `b) Systems interact with minimal dependencies`, `c) No integration`, `d) Physical separation`], correct: ['b'], points: 0.2, explanation: `Loosely coupled systems = interact via standards (APIs) with minimal dependencies. Enables flexibility to change components without breaking whole system. Modern microservices principle.`}        ];
+
+        let currentQuestions = [], userAnswers = {}, currentQuestionIndex = 0;
+        let coins = 0, streak = 0, maxStreak = 0, gameMode = 'training';
+        let playerName = 'MARIO', selectedEmoji = '🍄', unlimitedTime = false;
+        let answeredCount = 0, correctCount = 0, examStartTime, timerInterval;
+        let totalTimeSeconds = 0;
+
+        const marioEmojis = ['🍄', '⭐', '🐢', '👑', '🏰', '🚩', '🌟', '🌻', '🔥', '💎', '🎯', '🎮', '🕹️', '👾', '🤖', '👻', '🐉', '🦖', '🚀', '🎪'];
+
+        const badges = [
+            {id: 'first_coin', name: 'First Coin', icon: '🪙', desc: 'First answer', unlocked: false},
+            {id: 'streak_3', name: 'Fire Power', icon: '🔥', desc: '3 streak', unlocked: false},
+            {id: 'streak_5', name: 'Super Star', icon: '⭐', desc: '5 streak', unlocked: false},
+            {id: 'streak_10', name: 'Invincible', icon: '🌟', desc: '10 streak', unlocked: false},
+            {id: 'speed_run', name: 'Speed Run', icon: '🏃', desc: '<20min', unlocked: false},
+            {id: 'perfect', name: 'Perfect', icon: '💚', desc: '20/20', unlocked: false},
+            {id: 'pass', name: 'Passed', icon: '👸', desc: '9.5+ score', unlocked: false},
+            {id: 'collector', name: 'Collector', icon: '💰', desc: '100 coins', unlocked: false},
+            {id: 'marathon', name: 'Marathon', icon: '🏃', desc: '200 Qs', unlocked: false}
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => renderEmojiSelector());
+
+        function renderEmojiSelector() {
+            const container = document.getElementById('emojiSelector');
+            container.innerHTML = marioEmojis.map(emoji => 
+                `<button onclick="selectEmoji('${emoji}')" class="text-2xl p-2 rounded-lg border-2 ${emoji === selectedEmoji ? 'bg-red-100 border-red-600' : 'bg-white border-gray-300'}" id="emoji-${emoji}">${emoji}</button>`
+            ).join('');
+        }
+
+        function selectEmoji(emoji) {
+            selectedEmoji = emoji;
+            renderEmojiSelector();
+        }
+
+        function setMode(mode) {
+            gameMode = mode;
+            document.getElementById('btnTraining').classList.toggle('opacity-60', mode !== 'training');
+            document.getElementById('btnExam').classList.toggle('opacity-60', mode !== 'exam');
+            document.getElementById('timeSliderContainer').style.opacity = mode === 'training' && unlimitedTime ? '0.5' : '1';
+        }
+
+        function updateSlider(id, value) {
+            document.getElementById(id).textContent = value;
+        }
+
+        function toggleUnlimitedTime() {
+            unlimitedTime = document.getElementById('unlimitedTime').checked;
+            document.getElementById('timeSliderContainer').style.opacity = unlimitedTime ? '0.5' : '1';
+        }
+
+        function startGame() {
+            playerName = document.getElementById('playerName').value.toUpperCase() || 'MARIO';
+            const numQuestions = parseInt(document.getElementById('numQuestions').value);
+
+            if (unlimitedTime) totalTimeSeconds = 99999;
+            else totalTimeSeconds = parseInt(document.getElementById('customTime').value) * 60;
+
+            const shuffled = [...questionBank].sort(() => 0.5 - Math.random());
+            currentQuestions = shuffled.slice(0, numQuestions);
+
+            userAnswers = {};
+            currentQuestionIndex = 0;
+            coins = 0;
+            streak = 0;
+            maxStreak = 0;
+            answeredCount = 0;
+            correctCount = 0;
+
+            document.getElementById('setupScreen').classList.add('hidden');
+            document.getElementById('examScreen').classList.remove('hidden');
+            document.getElementById('headerBar').classList.remove('hidden');
+            document.getElementById('mobileNav').classList.remove('hidden');
+            document.getElementById('playerAvatar').textContent = selectedEmoji;
+            document.getElementById('nameDisplay').textContent = playerName;
+
+            renderQuestions();
+            renderQuickNav();
+            updateHUD();
+            startTimer();
+            unlockBadge('first_coin');
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+
+            currentQuestions.forEach((q, index) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = `question-card ${index === 0 ? 'active' : ''}`;
+                qDiv.id = `question-${index}`;
+
+                let html = `
+                    <div class="mario-card p-4 sm:p-6 mb-4">
+                        <div class="flex items-start gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-white font-bold pixel-font text-sm border-2 border-yellow-600 shadow-lg flex-shrink-0">${index + 1}</div>
+                            <div>
+                                <div class="pixel-font text-[10px] text-gray-500 mb-1">${getQuestionTypeName(q.type)}</div>
+                                <div class="text-base font-bold text-gray-800">${q.question}</div>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                `;
+
+                if (q.type === 'tf') {
+                    html += `
+                        <button onclick="selectOption(${q.id}, 'a', 'tf')" class="option-btn" data-value="a"><span class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">✅</span><span class="font-semibold">TRUE</span></button>
+                        <button onclick="selectOption(${q.id}, 'b', 'tf')" class="option-btn" data-value="b"><span class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">❌</span><span class="font-semibold">FALSE</span></button>
+                    `;
+                } else if (q.type === 'mc') {
+                    q.options.forEach(opt => {
+                        const val = opt.charAt(0);
+                        html += `<button onclick="selectOption(${q.id}, '${val}', 'mc')" class="option-btn" data-value="${val}"><span class="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center font-bold text-red-800 border-2 border-red-600">${val.toUpperCase()}</span><span>${opt.substring(3)}</span></button>`;
+                    });
+                } else if (q.type === 'multi') {
+                    q.options.forEach(opt => {
+                        const val = opt.charAt(0);
+                        html += `<button onclick="toggleOption(${q.id}, '${val}')" class="option-btn" data-value="${val}"><div class="checkbox-custom" id="cb-${q.id}-${val}"></div><span>${opt.substring(3)}</span></button>`;
+                    });
+                    html += `<button onclick="submitMulti(${q.id})" class="mario-btn green w-full mt-4 py-3 rounded-lg pixel-font text-sm">✅ CHECK ANSWER</button>`;
+                } else if (q.type === 'dropdown') {
+                    html += `<select onchange="selectDropdown(${q.id}, this.value)" class="w-full p-4 border-4 border-blue-400 rounded-lg pixel-font text-sm bg-yellow-50"><option value="">-- SELECT --</option>${q.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}</select>`;
+                }
+
+                html += `</div><div id="feedback-${index}" class="hidden"></div></div>`;
+                qDiv.innerHTML = html;
+                container.appendChild(qDiv);
+            });
+        }
+
+        function getQuestionTypeName(type) {
+            const names = {tf: 'TRUE/FALSE', mc: 'MULTIPLE CHOICE', multi: 'MULTI-SELECT', dropdown: 'MATCHING'};
+            return names[type] || type.toUpperCase();
+        }
+
+        function renderQuickNav() {
+            const container = document.getElementById('quickNav');
+            container.innerHTML = currentQuestions.map((q, i) => {
+                const isAnswered = userAnswers[q.id]?.length > 0;
+                const isCurrent = i === currentQuestionIndex;
+                return `<button onclick="goToQuestion(${i})" class="coin ${isAnswered ? 'answered' : ''} ${isCurrent ? 'current' : ''}" id="nav-${i}">${isAnswered ? '✓' : i + 1}</button>`;
+            }).join('');
+        }
+
+        function selectOption(qid, val, type) {
+            if (userAnswers[qid] && gameMode === 'exam') return;
+            userAnswers[qid] = [val];
+            answeredCount++;
+            const q = currentQuestions.find(q => q.id === qid);
+            handleAnswer(q.correct.includes(val), q, qid, [val]);
+        }
+
+        function toggleOption(qid, val) {
+            if (!userAnswers[qid]) userAnswers[qid] = [];
+            const idx = userAnswers[qid].indexOf(val);
+            const cb = document.getElementById(`cb-${qid}-${val}`);
+            if (idx > -1) {
+                userAnswers[qid].splice(idx, 1);
+                cb.classList.remove('checked');
+                cb.innerHTML = '';
+            } else {
+                userAnswers[qid].push(val);
+                cb.classList.add('checked');
+                cb.innerHTML = '✓';
+            }
+        }
+
+        function submitMulti(qid) {
+            const q = currentQuestions.find(q => q.id === qid);
+            const ans = userAnswers[qid] || [];
+            if (ans.length === 0) return alert('Select at least one option!');
+            const isCorrect = q.correct.every(c => ans.includes(c)) && ans.length === q.correct.length;
+            answeredCount++;
+            handleAnswer(isCorrect, q, qid, ans);
+        }
+
+        function selectDropdown(qid, val) {
+            if (!val) return;
+            const q = currentQuestions.find(q => q.id === qid);
+            answeredCount++;
+            userAnswers[qid] = [val];
+            handleAnswer(q.correct.includes(val), q, qid, [val]);
+        }
+
+        function handleAnswer(isCorrect, q, qid, selectedVals) {
+            if (isCorrect) {
+                correctCount++;
+                coins += calculateCoins();
+                streak++;
+                if (streak > maxStreak) maxStreak = streak;
+                if (streak >= 3) unlockBadge('streak_3');
+                if (streak >= 5) unlockBadge('streak_5');
+                if (streak >= 10) unlockBadge('streak_10');
+                if (coins >= 100) unlockBadge('collector');
+            } else {
+                streak = 0;
+            }
+
+            updateHUD();
+            renderQuickNav();
+
+            const card = document.getElementById(`question-${currentQuestionIndex}`);
+            const buttons = card.querySelectorAll('[data-value]');
+            buttons.forEach(btn => {
+                const btnVal = btn.getAttribute('data-value');
+                if (selectedVals.includes(btnVal) && !q.correct.includes(btnVal)) btn.classList.add('wrong');
+                if (q.correct.includes(btnVal)) btn.classList.add('correct');
+                btn.disabled = true;
+            });
+
+            const feedbackDiv = document.getElementById(`feedback-${currentQuestionIndex}`);
+            feedbackDiv.classList.remove('hidden');
+
+            const correctText = q.correct.map(c => {
+                if (q.type === 'tf') return c === 'a' ? 'TRUE' : 'FALSE';
+                if (q.options) {
+                    const opt = q.options.find(o => o.startsWith(c + ')'));
+                    return opt ? opt.substring(3) : c;
+                }
+                return c;
+            }).join(', ');
+
+            feedbackDiv.innerHTML = `
+                <div class="feedback-box ${isCorrect ? 'correct' : 'wrong'}">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-2xl">${isCorrect ? '🎉' : '😅'}</span>
+                        <span class="font-bold pixel-font text-sm">${isCorrect ? 'CORRECT!' : 'WRONG!'}</span>
+                    </div>
+                    ${!isCorrect ? `<div class="text-sm mb-2"><strong>Correct:</strong> ${correctText}</div>` : ''}
+                </div>
+                <div class="explanation-box">
+                    <div class="flex items-start gap-2">
+                        <span class="text-lg">💡</span>
+                        <div>
+                            <div class="font-bold text-sm mb-1">EXPLANATION:</div>
+                            <div class="text-sm leading-relaxed">${q.explanation}</div>
+                        </div>
+                    </div>
+                </div>
+                ${gameMode === 'training' ? `<button onclick="nextQuestion()" class="mario-btn w-full mt-4 py-3 rounded-lg pixel-font text-sm">NEXT →</button>` : ''}
+            `;
+
+            if (gameMode === 'exam') setTimeout(() => nextQuestion(), 800);
+            else feedbackDiv.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+        }
+
+        function calculateCoins() {
+            let base = 10;
+            if (streak >= 3) base += 5;
+            if (streak >= 5) base += 5;
+            if (streak >= 10) base += 10;
+            return base;
+        }
+
+        function updateHUD() {
+            document.getElementById('coinCount').textContent = coins;
+            document.getElementById('streakCount').textContent = streak;
+            document.getElementById('firePowerIndicator').classList.toggle('hidden', streak < 3);
+        }
+
+        function startTimer() {
+            if (unlimitedTime) {
+                document.getElementById('timerValue').textContent = '∞';
+                return;
+            }
+            let seconds = totalTimeSeconds;
+            examStartTime = Date.now();
+            timerInterval = setInterval(() => {
+                seconds--;
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                document.getElementById('timerValue').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+                if (seconds <= 0) {
+                    clearInterval(timerInterval);
+                    submitExam();
+                }
+            }, 1000);
+        }
+
+        function goToQuestion(index) {
+            document.querySelectorAll('.question-card').forEach((el, idx) => el.classList.toggle('active', idx === index));
+            currentQuestionIndex = index;
+            renderQuickNav();
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < currentQuestions.length - 1) goToQuestion(currentQuestionIndex + 1);
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) goToQuestion(currentQuestionIndex - 1);
+        }
+
+        function confirmExit() {
+            document.getElementById('exitModal').classList.remove('hidden');
+        }
+
+        function confirmExitYes() {
+            clearInterval(timerInterval);
+            location.reload();
+        }
+
+        function confirmExitNo() {
+            document.getElementById('exitModal').classList.add('hidden');
+        }
+
+        function submitExam() {
+            clearInterval(timerInterval);
+            const timeTaken = unlimitedTime ? 0 : Math.floor((Date.now() - examStartTime) / 1000);
+
+            let totalPoints = 0, earnedPoints = 0;
+            currentQuestions.forEach(q => {
+                totalPoints += q.points;
+                const ans = userAnswers[q.id] || [];
+                if (q.type === 'multi') {
+                    if (q.correct.every(c => ans.includes(c)) && ans.length === q.correct.length) earnedPoints += q.points;
+                } else if (q.correct.some(c => ans.includes(c))) earnedPoints += q.points;
+            });
+
+            const score20 = (earnedPoints / totalPoints) * 20;
+            const passed = score20 >= 9.5;
+
+            document.getElementById('examScreen').classList.add('hidden');
+            document.getElementById('headerBar').classList.add('hidden');
+            document.getElementById('mobileNav').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+
+            const circle = document.getElementById('scoreCircle');
+            const circumference = 2 * Math.PI * 45;
+            setTimeout(() => circle.style.strokeDashoffset = circumference - ((score20 / 20) * circumference), 100);
+
+            let cur = 0;
+            const tm = setInterval(() => {
+                cur += score20 / 50;
+                if (cur >= score20) { cur = score20; clearInterval(tm); }
+                document.getElementById('finalScore').textContent = cur.toFixed(1);
+            }, 30);
+
+            document.getElementById('resultEmoji').textContent = passed ? '👑' : '🍄';
+            document.getElementById('statCoins').textContent = coins;
+            document.getElementById('statTime').textContent = unlimitedTime ? '∞' : `${Math.floor(timeTaken / 60)}:${(timeTaken % 60).toString().padStart(2, '0')}`;
+            document.getElementById('statStreak').textContent = maxStreak;
+
+            let rank = 'F';
+            if (score20 >= 18) rank = 'S';
+            else if (score20 >= 16) rank = 'A';
+            else if (score20 >= 14) rank = 'B';
+            else if (score20 >= 12) rank = 'C';
+            else if (score20 >= 10) rank = 'D';
+            else if (passed) rank = 'E';
+            document.getElementById('statRank').textContent = rank;
+
+            if (passed) unlockBadge('pass');
+            if (score20 >= 20) unlockBadge('perfect');
+            if (!unlimitedTime && timeTaken < 1200 && currentQuestions.length >= 20) unlockBadge('speed_run');
+            if (currentQuestions.length >= 200) unlockBadge('marathon');
+
+            const earned = badges.filter(b => b.unlocked);
+            if (earned.length > 0) {
+                document.getElementById('achievementsSection').classList.remove('hidden');
+                document.getElementById('earnedBadges').innerHTML = earned.map(b => 
+                    `<div class="bg-gradient-to-br from-yellow-400 to-orange-500 text-white p-2 rounded-lg border-2 border-yellow-600 flex flex-col items-center w-16 h-16"><span class="text-xl">${b.icon}</span><span class="text-[8px] text-center">${b.name}</span></div>`
+                ).join('');
+            }
+
+            if (passed) {
+                for (let i = 0; i < 30; i++) {
+                    const el = document.createElement('div');
+                    el.className = 'confetti';
+                    el.textContent = ['🪙', '⭐', '🍄'][Math.floor(Math.random() * 3)];
+                    el.style.left = Math.random() * 100 + 'vw';
+                    el.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    document.body.appendChild(el);
+                    setTimeout(() => el.remove(), 4000);
+                }
+            }
+
+            saveScore(playerName, score20, coins, currentQuestions.length, selectedEmoji);
+            renderReview();
+        }
+
+        function unlockBadge(id) {
+            const b = badges.find(x => x.id === id);
+            if (b) b.unlocked = true;
+        }
+
+        function renderReview() {
+            const container = document.getElementById('reviewContent');
+            container.innerHTML = currentQuestions.map((q, idx) => {
+                const ans = userAnswers[q.id] || [];
+                let isCorrect = false;
+                if (q.type === 'multi') isCorrect = q.correct.every(c => ans.includes(c)) && ans.length === q.correct.length;
+                else isCorrect = q.correct.some(c => ans.includes(c));
+
+                const correctText = q.correct.map(c => {
+                    if (q.type === 'tf') return c === 'a' ? 'TRUE' : 'FALSE';
+                    if (q.options) { const opt = q.options.find(o => o.startsWith(c + ')')); return opt ? opt.substring(3) : c; }
+                    return c;
+                }).join(', ');
+
+                return `
+                    <div class="review-item border-2 ${isCorrect ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50'} rounded-lg p-3" onclick="this.querySelector('.review-detail').classList.toggle('show')">
+                        <div class="flex justify-between items-start">
+                            <div class="font-bold text-sm pr-2">Q${idx + 1}: ${q.question}</div>
+                            <span class="text-xl flex-shrink-0">${isCorrect ? '✅' : '❌'}</span>
+                        </div>
+                        <div class="text-xs text-gray-600 mt-1">Your: ${ans.join(', ') || 'None'} | Correct: ${correctText}</div>
+                        <div class="review-detail"><div class="text-xs"><strong>Explanation:</strong> ${q.explanation}</div></div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function saveScore(name, score, coins, questions, emoji) {
+            let scores = JSON.parse(localStorage.getItem('marioExamScores') || '[]');
+            scores.push({name, score, coins, questions, emoji, date: new Date().toISOString(), mode: gameMode});
+            scores.sort((a, b) => b.score - a.score);
+            localStorage.setItem('marioExamScores', JSON.stringify(scores.slice(0, 10)));
+        }
+
+        function showLeaderboard() {
+            const scores = JSON.parse(localStorage.getItem('marioExamScores') || '[]');
+            const list = document.getElementById('leaderboardList');
+
+            if (scores.length === 0) {
+                list.innerHTML = '<div class="text-center text-gray-500 pixel-font text-xs py-8">NO SCORES YET!</div>';
+            } else {
+                list.innerHTML = scores.map((s, i) => `
+                    <div class="flex items-center gap-3 p-3 ${i === 0 ? 'bg-yellow-100 border-2 border-yellow-400 rounded-lg' : 'bg-gray-100 rounded-lg'}">
+                        <div class="text-xl">${s.emoji}</div>
+                        <div class="w-6 h-6 rounded-full ${i < 3 ? 'bg-yellow-500 text-white' : 'bg-gray-400 text-white'} flex items-center justify-center font-bold text-xs">${i + 1}</div>
+                        <div class="flex-1 min-w-0">
+                            <div class="font-bold text-sm truncate">${s.name}</div>
+                            <div class="text-xs text-gray-500">${s.questions}Q • ${s.mode}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold text-blue-600">${s.score.toFixed(1)}/20</div>
+                            <div class="text-xs text-yellow-600">${s.coins}🪙</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            document.getElementById('leaderboardModal').classList.remove('hidden');
+        }
+
+        function closeLeaderboard() {
+            document.getElementById('leaderboardModal').classList.add('hidden');
+        }
+    
+
+        // Training Manual Functions
+        function scrollToSection(section) {
+            const el = document.getElementById('section-' + section);
+            if (el) el.scrollIntoView({behavior: 'smooth', block: 'start'});
+        }
+
+        function showTrainingManual() {
+            document.getElementById('trainingManualModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeTrainingManual() {
+            document.getElementById('trainingManualModal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        // Close modal on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeTrainingManual();
+                closeLeaderboard();
+                confirmExitNo();
+            }
+        });
+</script>
+
+<!-- Training Manual Modal -->
+<div id="trainingManualModal" class="modal-overlay hidden" onclick="if(event.target===this)closeTrainingManual()">
+    <div class="mario-card modal-content p-0 overflow-hidden" style="max-width: 800px; max-height: 90vh;">
+        <div class="sticky top-0 bg-gradient-to-r from-red-600 to-red-800 p-4 border-b-4 border-red-900 z-10">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl">📖</span>
+                    <div>
+                        <h2 class="pixel-font text-white text-sm">MARIO'S TRAINING MANUAL</h2>
+                        <p class="text-red-200 text-xs pixel-font">NOVA IMS e-Business Mastery Guide</p>
+                    </div>
+                </div>
+                <button onclick="closeTrainingManual()" class="w-10 h-10 rounded-full bg-red-700 hover:bg-red-600 flex items-center justify-center text-white text-xl border-2 border-red-400">×</button>
+            </div>
+        </div>
+
+        <div class="p-4 overflow-y-auto" style="max-height: calc(90vh - 80px);">
+            <!-- Quick Navigation -->
+            <div class="flex gap-2 overflow-x-auto pb-4 mb-4 border-b-2 border-yellow-400">
+                <button onclick="scrollToSection('worlds')" class="mario-btn text-xs py-2 px-3 rounded-lg whitespace-nowrap">🌍 7 Worlds</button>
+                <button onclick="scrollToSection('hexagon')" class="mario-btn blue text-xs py-2 px-3 rounded-lg whitespace-nowrap">🔷 Magic Hexagon</button>
+                <button onclick="scrollToSection('definitions')" class="mario-btn green text-xs py-2 px-3 rounded-lg whitespace-nowrap">📚 Definitions</button>
+                <button onclick="scrollToSection('phases')" class="mario-btn text-xs py-2 px-3 rounded-lg whitespace-nowrap" style="background: linear-gradient(180deg, #9333ea 0%, #6b21a8 100%);">⚡ SAP Activate</button>
+                <button onclick="scrollToSection('metrics')" class="mario-btn text-xs py-2 px-3 rounded-lg whitespace-nowrap" style="background: linear-gradient(180deg, #ea580c 0%, #c2410c 100%);">💰 Metrics</button>
+                <button onclick="scrollToSection('strategy')" class="mario-btn text-xs py-2 px-3 rounded-lg whitespace-nowrap" style="background: linear-gradient(180deg, #059669 0%, #047857 100%);">🎯 Strategy</button>
+            </div>
+
+            <!-- 7 Worlds Section -->
+            <div id="section-worlds" class="mb-8">
+                <h3 class="pixel-font text-lg text-red-700 mb-4 flex items-center gap-2">
+                    <span>🌍</span> 7 WORLDS OF WISDOM <span class="text-xs text-gray-500">(Crash Course)</span>
+                </h3>
+
+                <div class="space-y-4">
+                    <!-- World 1 -->
+                    <div class="bg-gradient-to-r from-green-100 to-green-200 border-4 border-green-600 rounded-xl p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="pixel-font text-green-800 text-xs bg-green-300 px-2 py-1 rounded">WORLD 1-1</span>
+                            <h4 class="font-bold text-green-900">Foundations & Frameworks</h4>
+                        </div>
+                        <ul class="text-sm text-green-800 space-y-1 list-disc list-inside">
+                            <li><strong>3rd Platform:</strong> Cloud, Big Data/Analytics, Mobility, Social Business, IoT/AI</li>
+                            <li><strong>Business Value Drivers:</strong> Cost reduction, Better decision making, Work optimization, Customer experience, Sense-and-act automation</li>
+                            <li><strong>e-Business Suite:</strong> Finance (CFO), Supply Chain (COO), Procurement (CPO), HR (CHRO), Customer Relationship (CRO), Sustainability (CSO)</li>
+                        </ul>
+                        <div class="mt-2 p-2 bg-red-100 border-l-4 border-red-500 text-xs">
+                            <strong>⚠️ EXAM TRAP:</strong> "Which system is System of Experience?" → Customer Relationship (CRO). "Which is System of Control?" → Finance (CFO)
+                        </div>
+                    </div>
+
+                    <!-- World 2 -->
+                    <div class="bg-gradient-to-r from-blue-100 to-blue-200 border-4 border-blue-600 rounded-xl p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="pixel-font text-blue-800 text-xs bg-blue-300 px-2 py-1 rounded">WORLD 1-2</span>
+                            <h4 class="font-bold text-blue-900">The Digital Core & L2C</h4>
+                        </div>
+                        <div class="bg-black text-green-400 font-mono text-xs p-3 rounded mb-2 overflow-x-auto">
+L2C PROCESS FLOW:
+Contact → Lead → Opportunity → Quote → Order → Cash
+
+CRITICAL DISTINCTIONS:
+• L2C (Lead to Cash): Starts with marketing/contact
+• O2C (Order to Cash): Starts with existing order  
+• P2P (Procure to Pay): Vendor-facing process
+                        </div>
+                        <ul class="text-sm text-blue-800 space-y-1 list-disc list-inside">
+                            <li>Customer Data: Browsing history, Demographics, Sentiment, Churn Risk</li>
+                            <li>Transactional Data: Orders, Supply Chain, Manufacturing, Payment Terms</li>
+                        </ul>
+                    </div>
+
+                    <!-- World 3 -->
+                    <div class="bg-gradient-to-r from-purple-100 to-purple-200 border-4 border-purple-600 rounded-xl p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="pixel-font text-purple-800 text-xs bg-purple-300 px-2 py-1 rounded">WORLD 1-3</span>
+                            <h4 class="font-bold text-purple-900">ERP Workshop (Operational Excellence)</h4>
+                        </div>
+                        <ul class="text-sm text-purple-800 space-y-1 list-disc list-inside">
+                            <li><strong>SAP S/4HANA Cloud:</strong> 99.7% Uptime SLA</li>
+                            <li><strong>Key Benefits:</strong> Continuous innovation, Mobile ERP, Lower costs, Intelligent technologies</li>
+                            <li><strong>Challenges Solved:</strong> Data silos, Duplication, Inconsistent data, Isolated decisions</li>
+                        </ul>
+                        <div class="mt-2 p-2 bg-yellow-100 border-l-4 border-yellow-500 text-xs">
+                            <strong>💡 REMEMBER:</strong> ERP focuses on Operational Excellence (doing more with less), NOT Competitive Advantage!
+                        </div>
+                    </div>
+
+                    <!-- World 4 -->
+                    <div class="bg-gradient-to-r from-orange-100 to-orange-200 border-4 border-orange-600 rounded-xl p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="pixel-font text-orange-800 text-xs bg-orange-300 px-2 py-1 rounded">WORLD 1-4</span>
+                            <h4 class="font-bold text-orange-900">e-Commerce Workshop (B2B & B2C)</h4>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-xs mb-2">
+                            <div class="bg-white p-2 rounded border-2 border-orange-300">
+                                <strong>B2C Models:</strong><br>
+                                • Direct sellers<br>
+                                • Online intermediaries<br>
+                                • Advertising-based<br>
+                                • Community-based<br>
+                                • Fee-based
+                            </div>
+                            <div class="bg-white p-2 rounded border-2 border-orange-300">
+                                <strong>B2B Connections:</strong><br>
+                                • Direct (FTP, EDI)<br>
+                                • Network (Ariba)<br>
+                                • Hybrid (Amazon)<br>
+                                • Managed (SAP)
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- World 5 -->
+                    <div class="bg-gradient-to-r from-red-100 to-red-200 border-4 border-red-600 rounded-xl p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="pixel-font text-red-800 text-xs bg-red-300 px-2 py-1 rounded">WORLD 1-5</span>
+                            <h4 class="font-bold text-red-900">Implementation & ROI (HEAVY EXAM WEIGHT!)</h4>
+                        </div>
+                        <div class="bg-black text-yellow-400 font-mono text-xs p-3 rounded mb-2">
+SAP ACTIVATE PHASES:
+1. Discover (2-6 weeks) → Value Case Approved
+2. Prepare (2-4 weeks) → Kick-off & Starter System
+3. Explore (4-8 weeks) → Solution Design (QUALITY GATE) ← HIGHEST RISK!
+4. Realize (1-3 months) → UAT Signed Off
+5. Deploy (2-4 weeks) → GO-LIVE
+6. Run (Ongoing) → Transition to BAU
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div class="bg-green-100 p-2 rounded border border-green-500">
+                                <strong>ROI Metrics:</strong><br>
+                                • Payback: 12-18 months<br>
+                                • 3-Year ROI: 250-350%<br>
+                                • B2B Commerce: 307%<br>
+                                • CX Leaders: 2× growth
+                            </div>
+                            <div class="bg-blue-100 p-2 rounded border border-blue-500">
+                                <strong>Post-Implementation:</strong><br>
+                                • Online Revenue: +10-25%<br>
+                                • Conversion: +15-60%<br>
+                                • Retention: +10-15%<br>
+                                • Time-to-Market: -30-50%
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- World 6 & 7 -->
+                    <div class="bg-gradient-to-r from-yellow-100 to-yellow-200 border-4 border-yellow-600 rounded-xl p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="pixel-font text-yellow-800 text-xs bg-yellow-300 px-2 py-1 rounded">WORLD 1-6/7</span>
+                            <h4 class="font-bold text-yellow-900">Project & Revision + AI Integration</h4>
+                        </div>
+                        <div class="bg-white p-3 rounded border-2 border-yellow-400 text-sm">
+                            <strong>Final Framework:</strong><br>
+                            AI Chatbots → [Financial][Supply Chain][Procurement][Customer][HR][Sustainability] → Business AI / Agentic AI ← E-Commerce integration
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Magic Hexagon Section -->
+            <div id="section-hexagon" class="mb-8">
+                <h3 class="pixel-font text-lg text-blue-700 mb-4 flex items-center gap-2">
+                    <span>🔷</span> THE MAGIC HEXAGON
+                </h3>
+                <div class="bg-black text-green-400 font-mono text-xs p-4 rounded-lg overflow-x-auto border-4 border-gray-700">
+        e-Business (Outer Layer)
+        /        \
+      CRM ------- e-Commerce ------- Commerce AI
+        \        /
+         \      /
+           ERP (Center)
+                </div>
+                <div class="mt-4 grid grid-cols-2 gap-4">
+                    <div class="bg-blue-100 border-4 border-blue-500 rounded-xl p-3">
+                        <h4 class="font-bold text-blue-800 text-sm mb-2">🔵 OPERATIONAL EXCELLENCE</h4>
+                        <p class="text-xs text-blue-700">Focus: Do more with less / reduce costs</p>
+                        <p class="text-xs text-blue-700 mt-1"><strong>Components:</strong> ERP + CRM</p>
+                        <p class="text-xs text-blue-700 mt-1"><strong>Owners:</strong> CFO, COO</p>
+                    </div>
+                    <div class="bg-yellow-100 border-4 border-yellow-500 rounded-xl p-3">
+                        <h4 class="font-bold text-yellow-800 text-sm mb-2">🟡 COMPETITIVE ADVANTAGE</h4>
+                        <p class="text-xs text-yellow-700">Focus: Product/service differentiation</p>
+                        <p class="text-xs text-yellow-700 mt-1"><strong>Components:</strong> e-Commerce + Commerce AI</p>
+                        <p class="text-xs text-yellow-700 mt-1"><strong>Owners:</strong> CMO, CRO</p>
+                    </div>
+                </div>
+                <div class="mt-4 p-3 bg-red-100 border-l-4 border-red-500 rounded">
+                    <p class="text-xs text-red-800"><strong>⚠️ EXAM TRAP:</strong> ERP is at the CENTER connecting everything. Digital Core = ERP + CRM (must mention BOTH!)</p>
+                </div>
+            </div>
+
+            <!-- Core Definitions -->
+            <div id="section-definitions" class="mb-8">
+                <h3 class="pixel-font text-lg text-purple-700 mb-4 flex items-center gap-2">
+                    <span>📚</span> CORE DEFINITIONS
+                </h3>
+                <div class="space-y-3">
+                    <div class="bg-white border-2 border-gray-300 rounded-lg p-3">
+                        <div class="flex justify-between items-start">
+                            <h4 class="font-bold text-gray-800">e-Business</h4>
+                            <span class="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">HIGH TRAP RISK</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-1">Business processes conducted digitally online (encompasses ERP, CRM, e-Commerce, AI)</p>
+                        <p class="text-xs text-red-600 mt-2"><strong>⚠️ TRAP:</strong> vs e-Commerce: e-Commerce is buying/selling online ONLY; e-Business is the superset</p>
+                    </div>
+
+                    <div class="bg-white border-2 border-gray-300 rounded-lg p-3">
+                        <div class="flex justify-between items-start">
+                            <h4 class="font-bold text-gray-800">3rd Platform</h4>
+                            <span class="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded">IDC Framework</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-1">Cloud, Big Data/Analytics, Mobility, Social Business, IoT/AI</p>
+                        <p class="text-xs text-red-600 mt-2"><strong>⚠️ TRAP:</strong> NOT LAN/Internet or Client/Server (that's 2nd Platform)</p>
+                    </div>
+
+                    <div class="bg-white border-2 border-gray-300 rounded-lg p-3">
+                        <h4 class="font-bold text-gray-800">Digital Core</h4>
+                        <p class="text-sm text-gray-600 mt-1">ERP + CRM backbone enabling operational excellence & competitive advantage</p>
+                        <p class="text-xs text-blue-600 mt-2"><strong>💡 MUST MENTION:</strong> Both ERP (internal) and CRM (external)</p>
+                    </div>
+
+                    <div class="bg-white border-2 border-gray-300 rounded-lg p-3">
+                        <div class="flex justify-between items-start">
+                            <h4 class="font-bold text-gray-800">L2C (Lead to Cash)</h4>
+                            <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">End-to-End</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-1">Contact → Lead → Opportunity → Quote → Order → Cash</p>
+                        <p class="text-xs text-red-600 mt-2"><strong>⚠️ TRAP:</strong> Don't confuse with O2C (Order to Cash - starts later in the cycle)</p>
+                    </div>
+
+                    <div class="bg-white border-2 border-gray-300 rounded-lg p-3">
+                        <h4 class="font-bold text-gray-800">Operational Excellence</h4>
+                        <p class="text-sm text-gray-600 mt-1">Do more with less / reduce costs (TQM, Lean, Six Sigma roots)</p>
+                        <p class="text-xs text-purple-600 mt-2"><strong>👔 CFO/COO Focus</strong></p>
+                    </div>
+
+                    <div class="bg-white border-2 border-gray-300 rounded-lg p-3">
+                        <h4 class="font-bold text-gray-800">Competitive Advantage</h4>
+                        <p class="text-sm text-gray-600 mt-1">Product/service differentiation to increase revenue (Porter's Model)</p>
+                        <p class="text-xs text-purple-600 mt-2"><strong>👔 CMO Focus</strong></p>
+                    </div>
+
+                    <div class="bg-white border-2 border-gray-300 rounded-lg p-3">
+                        <h4 class="font-bold text-gray-800">Fit-to-Standard</h4>
+                        <p class="text-sm text-gray-600 mt-1">Adapting business processes to SAP Best Practices vs customization</p>
+                        <p class="text-xs text-green-600 mt-2"><strong>✅ Key concept in SAP Activate</strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SAP Activate Phases -->
+            <div id="section-phases" class="mb-8">
+                <h3 class="pixel-font text-lg text-purple-700 mb-4 flex items-center gap-2">
+                    <span>⚡</span> SAP ACTIVATE PHASES <span class="text-xs text-red-500">CRITICAL!</span>
+                </h3>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-3 p-3 bg-green-100 border-l-4 border-green-500 rounded">
+                        <div class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center font-bold text-sm">1</div>
+                        <div class="flex-1">
+                            <div class="font-bold text-green-800">Discover</div>
+                            <div class="text-xs text-green-700">2-6 weeks → Value Case Approved</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 bg-blue-100 border-l-4 border-blue-500 rounded">
+                        <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm">2</div>
+                        <div class="flex-1">
+                            <div class="font-bold text-blue-800">Prepare</div>
+                            <div class="text-xs text-blue-700">2-4 weeks → Kick-off & Starter System Ready</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 bg-yellow-100 border-l-4 border-yellow-500 rounded relative">
+                        <div class="absolute -right-2 -top-2 bg-red-500 text-white text-xs px-2 py-1 rounded pixel-font">HIGHEST RISK!</div>
+                        <div class="w-8 h-8 rounded-full bg-yellow-500 text-white flex items-center justify-center font-bold text-sm">3</div>
+                        <div class="flex-1">
+                            <div class="font-bold text-yellow-800">Explore</div>
+                            <div class="text-xs text-yellow-700">4-8 weeks → Solution Design Approved (Quality Gate)</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 bg-purple-100 border-l-4 border-purple-500 rounded">
+                        <div class="w-8 h-8 rounded-full bg-purple-500 text-white flex items-center justify-center font-bold text-sm">4</div>
+                        <div class="flex-1">
+                            <div class="font-bold text-purple-800">Realize</div>
+                            <div class="text-xs text-purple-700">1-3 months/wave → UAT Signed Off</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 bg-orange-100 border-l-4 border-orange-500 rounded">
+                        <div class="w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold text-sm">5</div>
+                        <div class="flex-1">
+                            <div class="font-bold text-orange-800">Deploy</div>
+                            <div class="text-xs text-orange-700">2-4 weeks → GO-LIVE</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 bg-gray-100 border-l-4 border-gray-500 rounded">
+                        <div class="w-8 h-8 rounded-full bg-gray-500 text-white flex items-center justify-center font-bold text-sm">6</div>
+                        <div class="flex-1">
+                            <div class="font-bold text-gray-800">Run</div>
+                            <div class="text-xs text-gray-700">Ongoing → Transition to BAU</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Financial Metrics -->
+            <div id="section-metrics" class="mb-8">
+                <h3 class="pixel-font text-lg text-orange-700 mb-4 flex items-center gap-2">
+                    <span>💰</span> KEY FINANCIAL METRICS & ROI
+                </h3>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-gradient-to-br from-yellow-100 to-yellow-200 border-4 border-yellow-500 rounded-xl p-3 text-center">
+                        <div class="text-2xl font-bold text-yellow-800">12-18</div>
+                        <div class="text-xs text-yellow-700">Months Payback Period</div>
+                    </div>
+                    <div class="bg-gradient-to-br from-green-100 to-green-200 border-4 border-green-500 rounded-xl p-3 text-center">
+                        <div class="text-2xl font-bold text-green-800">250-350%</div>
+                        <div class="text-xs text-green-700">3-Year ROI</div>
+                    </div>
+                    <div class="bg-gradient-to-br from-blue-100 to-blue-200 border-4 border-blue-500 rounded-xl p-3 text-center">
+                        <div class="text-2xl font-bold text-blue-800">307%</div>
+                        <div class="text-xs text-blue-700">SAP Commerce Cloud B2B ROI</div>
+                    </div>
+                    <div class="bg-gradient-to-br from-purple-100 to-purple-200 border-4 border-purple-500 rounded-xl p-3 text-center">
+                        <div class="text-2xl font-bold text-purple-800">2×</div>
+                        <div class="text-xs text-purple-700">Revenue Growth (CX Leaders)</div>
+                    </div>
+                </div>
+                <div class="mt-4 space-y-2 text-sm">
+                    <div class="flex justify-between items-center p-2 bg-white rounded border">
+                        <span>Conversion Rate Improvement</span>
+                        <span class="font-bold text-green-600">+15-60%</span>
+                    </div>
+                    <div class="flex justify-between items-center p-2 bg-white rounded border">
+                        <span>Page Load Time Improvement</span>
+                        <span class="font-bold text-green-600">-50-70%</span>
+                    </div>
+                    <div class="flex justify-between items-center p-2 bg-white rounded border">
+                        <span>Online Revenue Growth</span>
+                        <span class="font-bold text-green-600">+10-25%</span>
+                    </div>
+                    <div class="flex justify-between items-center p-2 bg-white rounded border">
+                        <span>Customer Retention Improvement</span>
+                        <span class="font-bold text-green-600">+10-15%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stakeholder Heat Map -->
+            <div id="section-stakeholders" class="mb-8">
+                <h3 class="pixel-font text-lg text-indigo-700 mb-4 flex items-center gap-2">
+                    <span>👔</span> STAKEHOLDER HEAT MAP
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-indigo-600 text-white">
+                                <th class="p-2 border border-indigo-800">Phase</th>
+                                <th class="p-2 border border-indigo-800">CEO</th>
+                                <th class="p-2 border border-indigo-800">CIO/CTO</th>
+                                <th class="p-2 border border-indigo-800">CMO</th>
+                                <th class="p-2 border border-indigo-800">CFO</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="bg-white">
+                                <td class="p-2 border font-bold">Discover</td>
+                                <td class="p-2 border text-center bg-red-200">🔴 Critical</td>
+                                <td class="p-2 border text-center bg-blue-200">🔵 Active</td>
+                                <td class="p-2 border text-center bg-blue-200">🔵 Active</td>
+                                <td class="p-2 border text-center bg-red-200">🔴 Critical</td>
+                            </tr>
+                            <tr class="bg-gray-50">
+                                <td class="p-2 border font-bold">Prepare</td>
+                                <td class="p-2 border text-center bg-blue-200">🔵 Active</td>
+                                <td class="p-2 border text-center bg-red-200">🔴 Critical</td>
+                                <td class="p-2 border text-center bg-blue-200">🔵 Active</td>
+                                <td class="p-2 border text-center bg-gray-200">⚪ Informed</td>
+                            </tr>
+                            <tr class="bg-white">
+                                <td class="p-2 border font-bold">Deploy</td>
+                                <td class="p-2 border text-center bg-red-200">🔴 Critical</td>
+                                <td class="p-2 border text-center bg-red-200">🔴 Critical</td>
+                                <td class="p-2 border text-center bg-blue-200">🔵 Active</td>
+                                <td class="p-2 border text-center bg-red-200">🔴 Critical</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-2 text-xs text-gray-600">
+                    <span class="inline-block mr-3">🔴 Must lead/approve</span>
+                    <span class="inline-block mr-3">🔵 Active participation</span>
+                    <span class="inline-block">⚪ Milestone updates only</span>
+                </div>
+            </div>
+
+            <!-- Exam Strategy -->
+            <div id="section-strategy" class="mb-8">
+                <h3 class="pixel-font text-lg text-green-700 mb-4 flex items-center gap-2">
+                    <span>🎯</span> EXAM STRATEGY <span class="text-xs text-red-500">BOSS BATTLE WARNINGS</span>
+                </h3>
+
+                <div class="space-y-4">
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-red-800 mb-2">🎮 PATTERN 1: "Which comes first?"</h4>
+                        <ul class="text-sm text-red-700 space-y-1">
+                            <li>• <strong>L2C vs O2C:</strong> L2C starts with Contact/Lead; O2C starts with Order</li>
+                            <li>• <strong>SAP Activate Phases:</strong> Discover → Prepare → Explore → Realize → Deploy → Run</li>
+                            <li>• <strong>Key Hand-offs:</strong> Week 18 (Solution Design) is highest risk milestone</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-blue-800 mb-2">🎮 PATTERN 2: "Who is responsible?"</h4>
+                        <ul class="text-sm text-blue-700 space-y-1">
+                            <li>• <strong>Operational Excellence:</strong> CFO (Finance) + COO (Supply Chain)</li>
+                            <li>• <strong>Competitive Advantage:</strong> CMO (e-Commerce) + CRO (CRM)</li>
+                            <li>• <strong>System Integration:</strong> CIO/CTO (critical in Prepare, Explore, Realize)</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-purple-50 border-l-4 border-purple-500 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-purple-800 mb-2">🎮 PATTERN 3: "What constitutes...?"</h4>
+                        <ul class="text-sm text-purple-700 space-y-1">
+                            <li>• <strong>3rd Platform:</strong> Must include Cloud + Big Data + Mobility + Social + IoT/AI</li>
+                            <li>• <strong>Digital Core:</strong> Must include ERP + CRM (not just one)</li>
+                            <li>• <strong>e-Business Suite:</strong> Six components (Finance, Supply Chain, Procurement, HR, Customer, Sustainability)</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-yellow-800 mb-2">🎮 PATTERN 4: ROI Calculations</h4>
+                        <ul class="text-sm text-yellow-700 space-y-1">
+                            <li>• <strong>Payback period:</strong> 12-18 months</li>
+                            <li>• <strong>3-year ROI:</strong> 250-350% (or specifically 307% for SAP Commerce B2B)</li>
+                            <li>• <strong>CX Leaders vs Laggards:</strong> 2× revenue growth</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg">
+                        <h4 class="font-bold text-green-800 mb-2">🎮 PATTERN 5: Technology Generations</h4>
+                        <ul class="text-sm text-green-700 space-y-1">
+                            <li>• <strong>1st Platform:</strong> Mainframe + Terminal</li>
+                            <li>• <strong>2nd Platform:</strong> LAN/Internet + Client/Server</li>
+                            <li>• <strong>3rd Platform:</strong> Cloud, Big Data, Mobility, Social, IoT/AI</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-6 p-4 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl border-4 border-yellow-600 text-center">
+                    <div class="text-3xl mb-2">🍄</div>
+                    <h4 class="pixel-font text-white text-sm mb-2">SECRET WEAPON</h4>
+                    <p class="text-white text-sm font-bold">If unsure on implementation questions, remember "Fit-to-Standard" is always preferred over customization in modern SAP implementations!</p>
+                </div>
+            </div>
+
+            <!-- Final Checklist -->
+            <div class="mb-4">
+                <h3 class="pixel-font text-lg text-gray-700 mb-4 flex items-center gap-2">
+                    <span>✅</span> FINAL CHECKLIST (Review 30 mins before exam)
+                </h3>
+                <div class="bg-white border-4 border-gray-300 rounded-xl p-4">
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-start gap-2"><span class="text-green-500">✓</span> Hexagon diagram: Know which components drive Operational Excellence vs Competitive Advantage</li>
+                        <li class="flex items-start gap-2"><span class="text-green-500">✓</span> L2C phases: Can recite Contact→Lead→Opp→Quote→Order→Cash flow</li>
+                        <li class="flex items-start gap-2"><span class="text-green-500">✓</span> SAP Activate: 6 phases in order, know Week 18 (Solution Design) is highest risk</li>
+                        <li class="flex items-start gap-2"><span class="text-green-500">✓</span> Stakeholders: CEO critical in Discover & Deploy; CIO critical in Prepare-Run</li>
+                        <li class="flex items-start gap-2"><span class="text-green-500">✓</span> Definitions: e-Business (superset) vs e-Commerce (subset)</li>
+                        <li class="flex items-start gap-2"><span class="text-green-500">✓</span> Numbers: 12-18 months payback, 307% ROI, 99.7% uptime, 2× growth for CX leaders</li>
+                        <li class="flex items-start gap-2"><span class="text-green-500">✓</span> System Types: System of Control (Finance), System of Experience (CRM), System of Visibility (Supply Chain)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
